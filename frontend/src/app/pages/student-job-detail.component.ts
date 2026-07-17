@@ -2,9 +2,10 @@ import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../core/api.service';
-import { EligibilityTip, Posting } from '../../core/models';
-import { PageHeaderComponent } from '../../shared/page-header.component';
+// FIX: Corrected all import paths
+import { ApiService } from '../core/api.service';
+import { EligibilityTip, Posting } from '../models';
+import { PageHeaderComponent } from '../components/page-header.component';
 
 @Component({
   selector: 'app-student-job-detail',

@@ -2,14 +2,14 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../core/auth.service';
+import { AuthService } from '../core/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  templateUrl: './login.component.html'
+  // FIX: Removed missing styleUrl. 
 })
 export class LoginComponent {
   private fb = inject(FormBuilder);
@@ -28,7 +28,9 @@ export class LoginComponent {
     if (this.form.invalid) return;
     this.loading = true;
     this.error = '';
+    
     const { email, password } = this.form.getRawValue();
+    
     this.auth.login(email!, password!).subscribe({
       next: () => this.router.navigate([this.auth.homeRoute()]),
       error: () => {

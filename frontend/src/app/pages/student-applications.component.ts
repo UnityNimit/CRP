@@ -1,10 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../core/api.service';
-import { Application } from '../../core/models';
-import { PageHeaderComponent } from '../../shared/page-header.component';
-import { StatusChipComponent } from '../../shared/status-chip.component';
-import { EmptyStateComponent } from '../../shared/empty-state.component';
+import { ApiService } from '../core/api.service';
+import { Application } from '../models';
+import { PageHeaderComponent } from '../components/page-header.component';
+import { StatusChipComponent } from '../components/status-chip.component';
+import { EmptyStateComponent } from '../components/empty-state.component';
 
 @Component({
   selector: 'app-student-applications',

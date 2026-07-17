@@ -10,84 +10,99 @@ import {
   Posting
 } from '../models';
 
+// Pointing directly to your live production backend
+const API_URL = 'https://crp-b2xa.onrender.com/api/v1';
+
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly api = '/api/v1';
-
   constructor(private http: HttpClient) {}
 
-  // Company
+  // ================= COMPANY ACTIONS =================
+
   createPosting(body: object) {
-    return this.http.post<Posting>(`${this.api}/company/postings`, body);
+    return this.http.post<Posting>(`${API_URL}/postings`, body);
   }
 
   companyPostings(page = 0, size = 20) {
-    return this.http.get<PageResponse<Posting>>(`${this.api}/company/postings`, {
+    return this.http.get<PageResponse<Posting>>(`${API_URL}/postings/company`, {
       params: new HttpParams().set('page', page).set('size', size)
     });
-  }
-
-  closePosting(id: number) {
-    return this.http.post<Posting>(`${this.api}/company/postings/${id}/close`, {});
   }
 
   postingApplications(postingId: number) {
-    return this.http.get<PageResponse<Application>>(`${this.api}/company/postings/${postingId}/applications`);
+    return this.http.get<PageResponse<Application>>(`${API_URL}/company/postings/${postingId}/applications`);
   }
 
   updateApplicationStatus(id: number, status: ApplicationStatus) {
-    return this.http.patch<Application>(`${this.api}/company/applications/${id}/status`, { status });
+    return this.http.patch<Application>(`${API_URL}/company/applications/${id}/status`, { status });
   }
 
-  // Student
+  closePosting(id: number) {
+    // Note: The UI calls this, but we need to add the endpoint to the backend JobPostingController later.
+    return this.http.post<Posting>(`${API_URL}/postings/${id}/close`, {});
+  }
+
+  // ================= STUDENT ACTIONS =================
+
   studentPostings(page = 0, size = 20) {
-    return this.http.get<PageResponse<Posting>>(`${this.api}/student/postings`, {
+    return this.http.get<PageResponse<Posting>>(`${API_URL}/postings`, {
       params: new HttpParams().set('page', page).set('size', size)
     });
   }
 
-  studentPosting(id: number) {
-    return this.http.get<Posting>(`${this.api}/student/postings/${id}`);
-  }
-
-  eligibility(id: number) {
-    return this.http.get<EligibilityTip>(`${this.api}/student/postings/${id}/eligibility`);
-  }
-
   apply(postingId: number, coverNote: string) {
-    return this.http.post<Application>(`${this.api}/student/applications`, { postingId, coverNote });
+    return this.http.post<Application>(`${API_URL}/student/applications`, { postingId, coverNote });
   }
 
   myApplications() {
-    return this.http.get<PageResponse<Application>>(`${this.api}/student/applications`);
+    return this.http.get<PageResponse<Application>>(`${API_URL}/student/applications`);
   }
 
-  // Admin
-  pendingPostings() {
-    return this.http.get<PageResponse<Posting>>(`${this.api}/admin/postings/pending`);
+  studentPosting(id: number) {
+    // Note: We will need to add a GET /postings/{id} to JobPostingController to fetch single details.
+    return this.http.get<Posting>(`${API_URL}/postings/${id}`);
   }
 
-  adminPosting(id: number) {
-    return this.http.get<Posting>(`${this.api}/admin/postings/${id}`);
+  eligibility(id: number) {
+    // Note: Placeholder for the AI Eligibility check feature.
+    return this.http.get<EligibilityTip>(`${API_URL}/postings/${id}/eligibility`);
+  }
+
+  // ================= ADMIN ACTIONS =================
+
+  pendingPostings(page = 0, size = 20) {
+    return this.http.get<PageResponse<Posting>>(`${API_URL}/postings/admin`, {
+      params: new HttpParams().set('page', page).set('size', size)
+    });
   }
 
   approvePosting(id: number) {
-    return this.http.post<Posting>(`${this.api}/admin/postings/${id}/approve`, {});
+    return this.http.patch<Posting>(`${API_URL}/postings/${id}/status`, null, {
+      params: new HttpParams().set('status', 'APPROVED')
+    });
   }
 
   rejectPosting(id: number, reason: string) {
-    return this.http.post<Posting>(`${this.api}/admin/postings/${id}/reject`, { reason });
+    return this.http.patch<Posting>(`${API_URL}/postings/${id}/status`, null, {
+      params: new HttpParams().set('status', 'REJECTED').set('remarks', reason)
+    });
   }
 
   analytics() {
-    return this.http.get<AnalyticsSummary>(`${this.api}/admin/analytics/summary`);
+    return this.http.get<AnalyticsSummary>(`${API_URL}/admin/analytics/summary`);
   }
 
+  adminPosting(id: number) {
+    return this.http.get<Posting>(`${API_URL}/postings/${id}`);
+  }
+
+  // ================= SHARED ACTIONS =================
+
   notifications() {
-    return this.http.get<PageResponse<Notification>>(`${this.api}/notifications`);
+    return this.http.get<PageResponse<Notification>>(`${API_URL}/notifications`);
   }
 
   markNotificationRead(id: number) {
-    return this.http.patch<void>(`${this.api}/notifications/${id}/read`, {});
+    return this.http.patch<void>(`${API_URL}/notifications/${id}/read`, {});
   }
 }

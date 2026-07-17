@@ -8,15 +8,17 @@ const TOKEN_KEY = 'campus_token';
 const ROLE_KEY = 'campus_role';
 const NAME_KEY = 'campus_name';
 
+// Pointing directly to your live production backend
+const API_URL = 'https://crp-b2xa.onrender.com/api/v1';
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly api = '/api/v1';
   readonly currentUser = signal<MeResponse | null>(null);
 
   constructor(private http: HttpClient, private router: Router) {}
 
   login(email: string, password: string) {
-    return this.http.post<LoginResponse>(`${this.api}/auth/login`, { email, password }).pipe(
+    return this.http.post<LoginResponse>(`${API_URL}/auth/login`, { email, password }).pipe(
       tap(res => {
         localStorage.setItem(TOKEN_KEY, res.token);
         localStorage.setItem(ROLE_KEY, res.role);
@@ -26,7 +28,7 @@ export class AuthService {
   }
 
   loadMe() {
-    return this.http.get<MeResponse>(`${this.api}/auth/me`).pipe(
+    return this.http.get<MeResponse>(`${API_URL}/auth/me`).pipe(
       tap(user => this.currentUser.set(user))
     );
   }

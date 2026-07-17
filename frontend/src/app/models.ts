@@ -13,10 +13,11 @@ export interface MeResponse {
   profileName: string | null;
 }
 
+// FIX: Aligned perfectly with Spring Boot's PageResponse.java
 export interface PageResponse<T> {
   content: T[];
-  page: number;
-  size: number;
+  pageNumber: number; 
+  pageSize: number;
   totalElements: number;
   totalPages: number;
 }

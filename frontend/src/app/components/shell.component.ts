@@ -7,8 +7,8 @@ import { AuthService } from '../core/auth.service';
   selector: 'app-shell',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
-  templateUrl: './shell.component.html',
-  styleUrl: './shell.component.scss'
+  templateUrl: './shell.component.html'
+  // FIX: Removed missing styleUrl. Styles are handled globally/inline.
 })
 export class ShellComponent {
   auth = inject(AuthService);

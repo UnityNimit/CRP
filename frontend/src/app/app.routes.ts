@@ -1,13 +1,15 @@
 import { Routes } from '@angular/router';
 import { authGuard, guestGuard, roleGuard } from './core/auth.guard';
 import { ShellComponent } from './components/shell.component';
-import { LoginComponent } from './features/auth/login.component';
+
+// FIX: Pointed all of these directly to the './pages/' folder based on your actual file structure
+import { LoginComponent } from './pages/login.component';
 import { CompanyHomeComponent } from './pages/company-home.component';
 import { CompanyCreateComponent } from './pages/company-create.component';
 import { CompanyDetailComponent } from './pages/company-detail.component';
-import { StudentHomeComponent } from './features/student/student-home.component';
-import { StudentJobDetailComponent } from './features/student/student-job-detail.component';
-import { StudentApplicationsComponent } from './features/student/student-applications.component';
+import { StudentHomeComponent } from './pages/student-home.component';
+import { StudentJobDetailComponent } from './pages/student-job-detail.component';
+import { StudentApplicationsComponent } from './pages/student-applications.component';
 import { AdminPendingComponent } from './pages/admin-pending.component';
 import { AdminAnalyticsComponent } from './pages/admin-analytics.component';
 
