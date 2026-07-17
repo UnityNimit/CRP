@@ -28,8 +28,11 @@ export class ShellComponent {
         { path: '/student/applications', label: 'My applications', exact: false }
       ];
     }
+    // --- REAL-WORLD ADMIN NAVIGATION ---
     return [
-      { path: '/admin', label: 'Pending queue', exact: true },
+      { path: '/admin', label: 'Job Approvals', exact: true },
+      { path: '/admin/companies', label: 'Recruiters', exact: false }, // NEW
+      { path: '/admin/students', label: 'Students', exact: false }, // NEW
       { path: '/admin/analytics', label: 'Analytics', exact: false }
     ];
   }

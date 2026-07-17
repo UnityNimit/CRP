@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard, roleGuard } from './core/auth.guard';
 import { ShellComponent } from './components/shell.component';
 
-// FIX: Pointed all of these directly to the './pages/' folder based on your actual file structure
 import { LoginComponent } from './pages/login.component';
 import { CompanyHomeComponent } from './pages/company-home.component';
 import { CompanyCreateComponent } from './pages/company-create.component';
@@ -12,9 +11,11 @@ import { StudentJobDetailComponent } from './pages/student-job-detail.component'
 import { StudentApplicationsComponent } from './pages/student-applications.component';
 import { AdminPendingComponent } from './pages/admin-pending.component';
 import { AdminAnalyticsComponent } from './pages/admin-analytics.component';
+import { CompanyRegisterComponent } from './pages/company-register.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
+  { path: 'company-register', component: CompanyRegisterComponent, canActivate: [guestGuard] },
   {
     path: 'company',
     component: ShellComponent,

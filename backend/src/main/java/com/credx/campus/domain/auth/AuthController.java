@@ -20,9 +20,9 @@ public class AuthController {
         this.authHelper = authHelper;
     }
 
-    @PostMapping("/login")
-    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-        return authService.login(request);
+    @PostMapping("/register-company")
+    public void registerCompany(@Valid @RequestBody RegisterCompanyRequest request) {
+        authService.registerCompany(request);
     }
 
     @GetMapping("/me")
@@ -57,5 +57,13 @@ public class AuthController {
         Role role, 
         String displayName, 
         String profileName
+    ) {}
+
+    public record RegisterCompanyRequest(
+        @NotBlank @Email String email,
+        @NotBlank String password,
+        @NotBlank String hrName,
+        @NotBlank String companyName,
+        String website
     ) {}
 }

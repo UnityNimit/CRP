@@ -25,6 +25,17 @@ public class StudentProfile {
     @Column(name = "grad_year", nullable = false)
     private Integer gradYear;
 
+    // --- NEW REAL-WORLD FIELDS ---
+    @Column(name = "fathers_name")
+    private String fathersName;
+
+    @Column(precision = 5, scale = 2)
+    private BigDecimal attendance;
+
+    @Column(name = "active_backlogs")
+    private Integer activeBacklogs = 0;
+
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public User getUser() { return user; }
@@ -35,4 +46,10 @@ public class StudentProfile {
     public void setCgpa(BigDecimal cgpa) { this.cgpa = cgpa; }
     public Integer getGradYear() { return gradYear; }
     public void setGradYear(Integer gradYear) { this.gradYear = gradYear; }
+    public String getFathersName() { return fathersName; }
+    public void setFathersName(String fathersName) { this.fathersName = fathersName; }
+    public BigDecimal getAttendance() { return attendance; }
+    public void setAttendance(BigDecimal attendance) { this.attendance = attendance; }
+    public Integer getActiveBacklogs() { return activeBacklogs; }
+    public void setActiveBacklogs(Integer activeBacklogs) { this.activeBacklogs = activeBacklogs; }
 }
