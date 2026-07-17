@@ -7,10 +7,11 @@ import {
   EligibilityTip,
   Notification,
   PageResponse,
-  Posting
+  Posting,
+  PendingCompany,        // <-- ADDED THIS
+  StudentUploadResult    // <-- ADDED THIS
 } from '../models';
 
-// Pointing directly to your live production backend
 const API_URL = 'https://crp-b2xa.onrender.com/api/v1';
 
 @Injectable({ providedIn: 'root' })
