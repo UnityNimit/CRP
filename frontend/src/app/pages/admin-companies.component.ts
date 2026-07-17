@@ -10,12 +10,12 @@ import { EmptyStateComponent } from '../components/empty-state.component';
   standalone: true,
   imports: [CommonModule, PageHeaderComponent, EmptyStateComponent],
   template: `
-    <app-page-header title="Recruiter Approvals" subtitle="Verify and approve companies before they can post jobs." />
+    <app-page-header title="Recruiter Approvals" subtitle="Verify and approve company accounts before they can post jobs." />
     
     @if (loading) {
-      <p>Loading pending companies...</p>
+      <div style="color: var(--color-muted); margin-top: 2rem;">Fetching applications...</div>
     } @else if (!companies.length) {
-      <app-empty-state title="All caught up" message="No companies are currently waiting for approval." />
+      <app-empty-state title="Queue Clear" message="No companies are currently waiting for approval." />
     } @else {
       <div class="company-grid">
         @for (c of companies; track c.id) {
@@ -26,7 +26,7 @@ import { EmptyStateComponent } from '../components/empty-state.component';
               @if (c.website) { <p><strong>Website:</strong> <a [href]="c.website" target="_blank">{{ c.website }}</a></p> }
             </div>
             <div class="actions">
-              <button class="btn-primary" (click)="approve(c)">Approve</button>
+              <button class="btn-primary" (click)="approve(c)">Approve Access</button>
               <button class="btn-danger" (click)="reject(c)">Reject</button>
             </div>
           </div>
@@ -35,13 +35,13 @@ import { EmptyStateComponent } from '../components/empty-state.component';
     }
   `,
   styles: [`
-    .company-grid { display: grid; gap: 1rem; }
-    .company-card { display: flex; justify-content: space-between; align-items: center; background: var(--color-panel); padding: 1.5rem; border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow); }
-    h3 { margin: 0 0 0.5rem 0; color: var(--color-ink); }
-    p { margin: 0.25rem 0; color: var(--color-muted); font-size: 0.9rem; }
-    a { color: var(--color-accent); text-decoration: none; }
-    .actions { display: flex; gap: 0.5rem; }
-    @media (max-width: 768px) { .company-card { flex-direction: column; align-items: flex-start; gap: 1rem; } .actions { width: 100%; } .actions button { flex: 1; } }
+    .company-grid { display: grid; gap: 1rem; margin-top: 2rem; }
+    .company-card { display: flex; justify-content: space-between; align-items: center; background: var(--color-panel); padding: 1.5rem 2rem; border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow); }
+    h3 { margin: 0 0 0.5rem 0; color: var(--color-ink); font-size: 1.25rem; }
+    p { margin: 0.35rem 0; color: var(--color-muted); font-size: 0.95rem; }
+    a { color: var(--color-success); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .actions { display: flex; gap: 0.75rem; }
   `]
 })
 export class AdminCompaniesComponent implements OnInit {
@@ -53,9 +53,9 @@ export class AdminCompaniesComponent implements OnInit {
 
   load() {
     this.loading = true;
-    this.api.pendingCompanies().subscribe(res => {
-      this.companies = res.content;
-      this.loading = false;
+    this.api.pendingCompanies().subscribe({
+      next: (res) => { this.companies = res.content; this.loading = false; },
+      error: () => { this.loading = false; }
     });
   }
 

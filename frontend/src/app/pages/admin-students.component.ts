@@ -21,18 +21,18 @@ import { PageHeaderComponent } from '../components/page-header.component';
       <div class="file-action">
         <input type="file" #fileInput accept=".csv" (change)="onFileSelected($event)" hidden />
         <button class="btn-primary upload-btn" (click)="fileInput.click()" [disabled]="loading">
-          {{ loading ? 'Processing...' : 'Select CSV & Upload' }}
+          {{ loading ? 'Processing Server Upload...' : 'Select CSV & Upload' }}
         </button>
         @if (selectedFile) { <span class="file-name">{{ selectedFile.name }}</span> }
       </div>
-      @if (error) { <p class="error-text">{{ error }}</p> }
+      @if (error) { <div class="error-banner">{{ error }}</div> }
     </div>
 
     @if (results.length > 0) {
       <div class="results-panel">
         <div class="results-header">
-          <h3>Upload Report</h3>
-          <button class="btn-secondary" (click)="downloadReport()">Download Report</button>
+          <h3>System Upload Report</h3>
+          <button class="btn-secondary" (click)="downloadReport()">Download Passwords</button>
         </div>
         <table class="data-table">
           <thead>
@@ -47,7 +47,7 @@ import { PageHeaderComponent } from '../components/page-header.component';
               <tr>
                 <td>{{ r.email }}</td>
                 <td><span [class]="r.status === 'CREATED' ? 'text-success' : 'text-warning'">{{ r.status }}</span></td>
-                <td><code>{{ r.generatedPassword }}</code></td>
+                <td><code class="pass-code">{{ r.generatedPassword }}</code></td>
               </tr>
             }
           </tbody>
@@ -56,20 +56,21 @@ import { PageHeaderComponent } from '../components/page-header.component';
     }
   `,
   styles: [`
-    .upload-panel { background: var(--color-panel); border: 1px dashed var(--color-border); border-radius: var(--radius); padding: 2rem; margin-bottom: 2rem; }
+    .upload-panel { background: var(--color-panel); border: 1px dashed #444; border-radius: var(--radius); padding: 2.5rem; margin-top: 2rem; margin-bottom: 2rem; }
     .instructions h3 { margin-top: 0; color: var(--color-ink); }
     .instructions p { color: var(--color-muted); font-size: 0.95rem; }
-    code { background: #1a1a1a; padding: 0.5rem 1rem; border-radius: 4px; display: block; margin: 1rem 0; font-family: monospace; color: #4ade80; border: 1px solid #333; }
+    code { background: #111; padding: 0.75rem 1rem; border-radius: 6px; display: inline-block; margin: 1rem 0; font-family: monospace; color: #4ade80; border: 1px solid #333; font-size: 0.9rem; }
     .file-action { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
-    .upload-btn { padding: 0.75rem 1.5rem; }
-    .file-name { color: var(--color-muted); font-size: 0.9rem; }
-    .error-text { color: var(--color-danger); margin-top: 1rem; }
-    .results-panel { background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--radius); overflow: hidden; }
-    .results-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; border-bottom: 1px solid var(--color-border); }
-    .results-header h3 { margin: 0; }
-    .text-success { color: var(--color-success); font-weight: 600; }
-    .text-warning { color: var(--color-warning); font-weight: 600; }
-    td code { display: inline-block; padding: 0.2rem 0.5rem; margin: 0; background: #000; }
+    .upload-btn { padding: 0.85rem 1.5rem; font-size: 0.95rem; }
+    .file-name { color: var(--color-muted); font-size: 0.95rem; font-weight: 500; }
+    .error-banner { background: #2a0a0a; border: 1px solid #5a1a1a; color: #ff6b6b; padding: 1rem; border-radius: 6px; font-size: 0.9rem; margin-top: 1.5rem; }
+    
+    .results-panel { background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .results-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid var(--color-border); }
+    .results-header h3 { margin: 0; font-size: 1.2rem; }
+    .text-success { color: var(--color-success); font-weight: 600; font-size: 0.85rem; }
+    .text-warning { color: var(--color-warning); font-weight: 600; font-size: 0.85rem; }
+    .pass-code { display: inline-block; padding: 0.3rem 0.6rem; margin: 0; background: #000; border: 1px solid #222; color: #fff; }
   `]
 })
 export class AdminStudentsComponent {
@@ -101,7 +102,7 @@ export class AdminStudentsComponent {
         this.selectedFile = null;
       },
       error: (err) => {
-        this.error = err.error?.message || 'Failed to process CSV file.';
+        this.error = err.error?.message || 'Failed to process CSV file. Ensure exactly 8 columns exist.';
         this.loading = false;
         this.selectedFile = null;
       }
