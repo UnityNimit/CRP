@@ -1,0 +1,63 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  background:
+    linear-gradient(135deg, rgba(11, 31, 51, 0.92), rgba(14, 124, 123, 0.75)),
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><path d="M0 59h60v1H0zM59 0v60h1V0z" fill="rgba(255,255,255,0.06)"/></svg>');
+  color: #fff;
+}
+
+.login-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4rem;
+}
+
+.login-hero h1 {
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  max-width: 12ch;
+}
+
+.login-hero p {
+  font-size: 1.1rem;
+  opacity: 0.85;
+  max-width: 32ch;
+}
+
+.login-panel {
+  background: var(--color-panel);
+  color: var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.login-panel h2 {
+  margin-bottom: 1.5rem;
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: 0.9rem;
+}
+
+.demo-hint {
+  margin-top: 2rem;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+code {
+  background: #eef2f6;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .login-page { grid-template-columns: 1fr; }
+  .login-hero { padding: 2rem; min-height: 40vh; }
+}

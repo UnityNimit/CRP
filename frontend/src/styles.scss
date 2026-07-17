@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --color-ink: #0b1f33;
+  --color-surface: #f5f7fa;
+  --color-panel: #ffffff;
+  --color-accent: #0e7c7b;
+  --color-accent-hover: #0a5f5e;
+  --color-border: #d7dee7;
+  --color-success: #1b7f4e;
+  --color-warning: #b7791f;
+  --color-danger: #b42318;
+  --color-muted: #5c6b7a;
+  --font-display: 'Fraunces', 'Source Serif 4', Georgia, serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --radius: 8px;
+  --shadow: 0 8px 24px rgba(11, 31, 51, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: var(--color-surface);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+button, .btn {
+  font-family: var(--font-body);
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.65rem 1.1rem;
+  font-weight: 600;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--color-accent-hover);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+}
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  color: var(--color-muted);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-panel);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+table.data-table th,
+table.data-table td {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+table.data-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  background: #eef2f6;
+}
+
+.route-enter {
+  animation: fadeSlide 0.18s ease;
+}
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

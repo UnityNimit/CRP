@@ -1,0 +1,33 @@
+<app-page-header title="Applicants" subtitle="Review and update candidate status." />
+
+@if (message) { <p class="success">{{ message }}</p> }
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Student</th>
+      <th>Branch</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (a of applications; track a.id) {
+      <tr>
+        <td>{{ a.studentName }}</td>
+        <td>{{ a.studentBranch }}</td>
+        <td><app-status-chip [status]="a.status" /></td>
+        <td class="actions">
+          <button class="btn btn-secondary" (click)="updateStatus(a, 'SHORTLISTED')">Shortlist</button>
+          <button class="btn btn-primary" (click)="updateStatus(a, 'SELECTED')">Select</button>
+          <button class="btn btn-danger" (click)="updateStatus(a, 'REJECTED')">Reject</button>
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+
+<style>
+  .actions { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  .success { color: var(--color-success); margin-bottom: 1rem; }
+</style>

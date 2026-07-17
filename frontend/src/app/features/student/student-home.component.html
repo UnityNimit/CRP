@@ -1,0 +1,31 @@
+<app-page-header title="Browse roles" subtitle="Only approved, open postings from verified companies." />
+
+@if (loading) {
+  <p>Loading roles…</p>
+} @else if (!postings.length) {
+  <app-empty-state title="No open roles" message="Check back after the placement cell approves new postings." />
+} @else {
+  <div class="job-list">
+    @for (p of postings; track p.id) {
+      <article class="job-card">
+        <div>
+          <h3>{{ p.title }}</h3>
+          <p class="company">{{ p.companyName }}</p>
+          <p class="meta">Min CGPA {{ p.minCgpa }} · {{ p.allowedBranches.join(', ') }} · Deadline {{ p.deadline }}</p>
+        </div>
+        <a [routerLink]="['/student/jobs', p.id]" class="btn btn-primary">View & apply</a>
+      </article>
+    }
+  </div>
+}
+
+<style>
+  .job-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .job-card {
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    background: var(--color-panel); padding: 1.1rem 1.25rem; border-radius: var(--radius);
+    border: 1px solid var(--color-border); box-shadow: var(--shadow);
+  }
+  .company { color: var(--color-accent); font-weight: 600; margin: 0.25rem 0; }
+  .meta { color: var(--color-muted); font-size: 0.85rem; margin: 0; }
+</style>

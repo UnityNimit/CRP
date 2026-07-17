@@ -1,0 +1,49 @@
+<app-page-header
+  title="Recruiting analytics"
+  subtitle="Placement rate = students with ≥1 selected offer ÷ total students."
+/>
+
+@if (summary) {
+  <div class="kpis">
+    <app-kpi-card label="Placement rate" [value]="summary.placementRate + '%'" [hint]="summary.placedStudents + ' of ' + summary.totalStudents + ' students placed'" />
+    <app-kpi-card label="Pending approvals" [value]="summary.pendingPostings" />
+    <app-kpi-card label="Open roles" [value]="summary.openPostings" />
+    <app-kpi-card label="Total applications" [value]="summary.totalApplications" />
+  </div>
+
+  <div class="charts">
+    <section class="chart-panel">
+      <h3>Applications per company</h3>
+      <canvas baseChart [data]="barData" [options]="barOptions" type="bar"></canvas>
+    </section>
+    <section class="chart-panel">
+      <h3>Postings by status</h3>
+      <canvas baseChart [data]="doughnutData" type="doughnut"></canvas>
+    </section>
+  </div>
+}
+
+<style>
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .charts {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 1rem;
+  }
+  .chart-panel {
+    background: var(--color-panel);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+  }
+  @media (max-width: 1000px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .charts { grid-template-columns: 1fr; }
+  }
+</style>

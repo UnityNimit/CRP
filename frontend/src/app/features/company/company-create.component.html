@@ -1,0 +1,40 @@
+<app-page-header title="New posting" subtitle="Submissions start as Awaiting approval until the placement cell reviews them." />
+
+<form [formGroup]="form" (ngSubmit)="submit()" class="form-panel">
+  <div class="form-group">
+    <label>Role title</label>
+    <input formControlName="title" placeholder="Software Engineer" />
+  </div>
+  <div class="form-group">
+    <label>Description</label>
+    <textarea formControlName="description" rows="4"></textarea>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <label>Minimum CGPA</label>
+      <input type="number" step="0.1" formControlName="minCgpa" />
+    </div>
+    <div class="form-group">
+      <label>Graduation year</label>
+      <input type="number" formControlName="gradYear" />
+    </div>
+    <div class="form-group">
+      <label>Deadline</label>
+      <input type="date" formControlName="deadline" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label>Allowed branches (comma-separated)</label>
+    <input formControlName="allowedBranches" placeholder="CSE, IT, ECE" />
+  </div>
+  @if (error) { <p class="error">{{ error }}</p> }
+  <button class="btn btn-primary" type="submit" [disabled]="form.invalid">Submit for approval</button>
+</form>
+
+<style>
+  .form-panel { max-width: 640px; background: var(--color-panel); padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+  .form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  textarea { resize: vertical; }
+  .error { color: var(--color-danger); }
+  @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+</style>

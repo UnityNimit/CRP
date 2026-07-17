@@ -1,0 +1,59 @@
+<app-page-header title="Pending approvals" subtitle="Postings cannot reach students until you approve them." />
+
+@if (message) { <p class="success">{{ message }}</p> }
+
+<div class="layout">
+  <div class="list">
+    @if (!postings.length) {
+      <app-empty-state title="Queue clear" message="No postings awaiting approval." />
+    } @else {
+      @for (p of postings; track p.id) {
+        <button class="queue-item" [class.active]="selected?.id === p.id" (click)="select(p)">
+          <strong>{{ p.title }}</strong>
+          <span>{{ p.companyName }}</span>
+          <app-status-chip [status]="p.status" />
+        </button>
+      }
+    }
+  </div>
+
+  @if (selected) {
+    <section class="review panel">
+      <h3>{{ selected.title }}</h3>
+      <p class="company">{{ selected.companyName }}</p>
+      <p>{{ selected.description }}</p>
+      <ul>
+        <li>Min CGPA: {{ selected.minCgpa }}</li>
+        <li>Branches: {{ selected.allowedBranches.join(', ') }}</li>
+        <li>Deadline: {{ selected.deadline }}</li>
+      </ul>
+      <div class="actions">
+        <button class="btn btn-primary" (click)="approve(selected)">Approve</button>
+      </div>
+      <form [formGroup]="rejectForm" (ngSubmit)="reject()" class="reject-form">
+        <div class="form-group">
+          <label>Rejection reason</label>
+          <textarea formControlName="reason" rows="2"></textarea>
+        </div>
+        <button class="btn btn-danger" type="submit" [disabled]="rejectForm.invalid">Reject</button>
+      </form>
+    </section>
+  }
+</div>
+
+<style>
+  .layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1rem; }
+  .queue-item {
+    display: block; width: 100%; text-align: left; background: var(--color-panel);
+    border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .queue-item.active { border-color: var(--color-accent); box-shadow: var(--shadow); }
+  .queue-item span { display: block; color: var(--color-muted); font-size: 0.85rem; margin: 0.25rem 0; }
+  .panel { background: var(--color-panel); padding: 1.25rem; border-radius: var(--radius); border: 1px solid var(--color-border); }
+  .company { color: var(--color-accent); font-weight: 600; }
+  .actions { margin: 1rem 0; }
+  .reject-form { border-top: 1px solid var(--color-border); padding-top: 1rem; }
+  .success { color: var(--color-success); }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+</style>

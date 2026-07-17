@@ -1,0 +1,26 @@
+<app-page-header title="My applications" subtitle="Track status updates from companies." />
+
+@if (!applications.length) {
+  <app-empty-state title="No applications yet" message="Browse approved roles and apply directly through the portal." />
+} @else {
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>Company</th>
+        <th>Status</th>
+        <th>Applied</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (a of applications; track a.id) {
+        <tr>
+          <td>{{ a.postingTitle }}</td>
+          <td>{{ a.companyName }}</td>
+          <td><app-status-chip [status]="a.status" /></td>
+          <td>{{ a.createdAt | date:'mediumDate' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
