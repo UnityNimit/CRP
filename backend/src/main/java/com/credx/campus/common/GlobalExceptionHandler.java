@@ -8,6 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,9 +54,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+        // --- THIS WILL PRINT THE REAL ERROR TO YOUR RENDER LOGS ---
+        System.err.println("🔥 CRITICAL BACKEND EXCEPTION CAUGHT: ");
+        ex.printStackTrace();
+        
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
             "code", 500,
-            "message", "Internal server error"
+            "message", "Internal server error: " + ex.getMessage()
         ));
     }
 }

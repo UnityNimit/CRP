@@ -1,7 +1,7 @@
 package com.credx.campus.domain.auth;
 
-import com.credx.campus.domain.user.User;
 import com.credx.campus.domain.user.Role;
+import com.credx.campus.domain.user.User;
 import com.credx.campus.security.AuthHelper;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -20,6 +20,11 @@ public class AuthController {
         this.authHelper = authHelper;
     }
 
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
+        return authService.login(request);
+    }
+
     @PostMapping("/register-company")
     public void registerCompany(@Valid @RequestBody RegisterCompanyRequest request) {
         authService.registerCompany(request);
@@ -36,12 +41,16 @@ public class AuthController {
     // ==========================================
 
     public record LoginRequest(
-        @NotBlank 
-        @Email 
-        String email,
-        
-        @NotBlank 
-        String password
+        @NotBlank @Email String email,
+        @NotBlank String password
+    ) {}
+
+    public record RegisterCompanyRequest(
+        @NotBlank @Email String email,
+        @NotBlank String password,
+        @NotBlank String hrName,
+        @NotBlank String companyName,
+        String website
     ) {}
 
     public record LoginResponse(
@@ -57,13 +66,5 @@ public class AuthController {
         Role role, 
         String displayName, 
         String profileName
-    ) {}
-
-    public record RegisterCompanyRequest(
-        @NotBlank @Email String email,
-        @NotBlank String password,
-        @NotBlank String hrName,
-        @NotBlank String companyName,
-        String website
     ) {}
 }
