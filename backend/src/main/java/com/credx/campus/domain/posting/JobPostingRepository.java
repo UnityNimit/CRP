@@ -24,7 +24,10 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
 
     long countByStatus(PostingStatus status);
 
+    // FIX: Safely binds enums directly through arguments to bypass Hibernate 6 nested-class semantic failures
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE JobPosting p SET p.status = com.credx.campus.domain.posting.JobPosting.PostingStatus.CLOSED WHERE p.status = com.credx.campus.domain.posting.JobPosting.PostingStatus.APPROVED AND p.deadline < :today")
-    int closeExpiredPostings(@Param("today") LocalDate today);
+    @Query("UPDATE JobPosting p SET p.status = :closedStatus WHERE p.status = :approvedStatus AND p.deadline < :today")
+    int closeExpiredPostings(@Param("today") LocalDate today, 
+                             @Param("closedStatus") PostingStatus closedStatus, 
+                             @Param("approvedStatus") PostingStatus approvedStatus);
 }

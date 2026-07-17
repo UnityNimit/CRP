@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -119,6 +120,21 @@ public class PostingService {
         notificationService.notifyUser(posting.getCompany().getUser(),
             "Your posting \"" + posting.getTitle() + "\" was rejected. Reason: " + reason);
         return toResponse(saved, 0);
+    }
+
+    // FIX: Added scheduled job so postings seamlessly expire as dictated by `@EnableScheduling`
+    @Scheduled(cron = "0 0 0 * * *") // Runs daily at exactly midnight
+    @Transactional
+    public void closeExpiredPostingsJob() {
+        int closedCount = postingRepository.closeExpiredPostings(
+            LocalDate.now(),
+            PostingStatus.CLOSED,
+            PostingStatus.APPROVED
+        );
+        
+        if (closedCount > 0) {
+            notificationService.notifyAdmins(closedCount + " expired job posting(s) were automatically closed by the system.");
+        }
     }
 
     private long getAppCount(Long postingId) {
