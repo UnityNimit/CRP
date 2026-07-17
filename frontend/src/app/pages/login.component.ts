@@ -186,7 +186,8 @@ export class LoginComponent {
     
     this.auth.login(email!, password!).subscribe({
       next: () => this.router.navigate([this.auth.homeRoute()]),
-      error: () => {
+      error: (err) => {
+        // FIX: Dynamically read the real error message from the backend!
         this.error = err.error?.message || 'Invalid email or password. Please verify your credentials.';
         this.loading = false;
       },
