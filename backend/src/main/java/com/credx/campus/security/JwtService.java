@@ -22,8 +22,14 @@ public class JwtService {
     }
 
     public String generateToken(Long userId, Role role) {
+        long expMillis = properties.expirationMs();
+        // FIX: If the environment variable is missing in Render, fallback to 24 hours.
+        if (expMillis <= 0) {
+            expMillis = 86400000L;
+        }
+
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + properties.expirationMs());
+        Date expiry = new Date(now.getTime() + expMillis);
         return Jwts.builder()
             .subject(String.valueOf(userId))
             .claim("role", role.name())
