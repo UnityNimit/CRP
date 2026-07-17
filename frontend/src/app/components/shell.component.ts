@@ -15,7 +15,8 @@ import { AuthService } from '../core/auth.service';
           <span class="brand-role">{{ auth.role }}</span>
         </div>
         <nav>
-          @for (item of navItems(); track item.path) {
+          <!-- FIX: Forced strict array-based router link to bust cache and routing bugs -->
+          @for (item of navItems(); track item.label) {
             <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.exact }">
               {{ item.label }}
             </a>
@@ -40,7 +41,7 @@ import { AuthService } from '../core/auth.service';
     .brand-name { font-size: 1.5rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #fff; letter-spacing: -0.03em; }
     .brand-role { font-size: 0.75rem; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.05em; padding: 0.2rem 0.5rem; background: #222; border-radius: 4px; display: inline-block; font-weight: 600; }
     nav { display: flex; flex-direction: column; gap: 0.5rem; }
-    nav a { color: var(--color-muted); text-decoration: none; padding: 0.85rem 1rem; border-radius: 6px; font-size: 0.95rem; font-weight: 500; transition: all 0.2s; }
+    nav a { color: var(--color-muted); text-decoration: none; padding: 0.85rem 1rem; border-radius: 6px; font-size: 0.95rem; font-weight: 500; transition: all 0.2s; display: block; }
     nav a:hover { color: #fff; background: #1a1a1a; }
     nav a.active { background: #fff; color: #000; font-weight: 600; }
     .main { flex: 1; display: flex; flex-direction: column; }
@@ -57,21 +58,22 @@ export class ShellComponent {
     const role = this.auth.role;
     if (role === 'COMPANY') {
       return [
-        { path: '/company', label: 'Postings', exact: true },
-        { path: '/company/new', label: 'New posting', exact: false }
+        { path: ['/company'], label: 'Postings', exact: true },
+        { path: ['/company', 'new'], label: 'New posting', exact: false }
       ];
     }
     if (role === 'STUDENT') {
       return [
-        { path: '/student', label: 'Browse roles', exact: true },
-        { path: '/student/applications', label: 'My applications', exact: false }
+        { path: ['/student'], label: 'Browse roles', exact: true },
+        { path: ['/student', 'applications'], label: 'My applications', exact: false }
       ];
     }
+    // FIX: Using exact route arrays ensures Angular never gets lost
     return [
-      { path: '/admin', label: 'Job Approvals', exact: true },
-      { path: '/admin/companies', label: 'Recruiters', exact: false },
-      { path: '/admin/students', label: 'Students', exact: false },
-      { path: '/admin/analytics', label: 'Analytics', exact: false }
+      { path: ['/admin'], label: 'Job Approvals', exact: true },
+      { path: ['/admin', 'companies'], label: 'Recruiters', exact: false },
+      { path: ['/admin', 'students'], label: 'Students', exact: false },
+      { path: ['/admin', 'analytics'], label: 'Analytics', exact: false }
     ];
   }
 
