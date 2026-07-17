@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, guestGuard, roleGuard } from './core/auth.guard';
-import { ShellComponent } from './layout/shell.component';
+import { ShellComponent } from './components/shell.component';
 import { LoginComponent } from './features/auth/login.component';
 import { CompanyHomeComponent } from './pages/company-home.component';
 import { CompanyCreateComponent } from './pages/company-create.component';

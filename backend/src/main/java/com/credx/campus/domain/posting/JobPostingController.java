@@ -1,11 +1,17 @@
 package com.credx.campus.domain.posting;
 
+import com.credx.campus.domain.posting.JobPosting.PostingStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/postings")
+@RequestMapping("/api/v1/postings")
 public class JobPostingController {
 
     private final PostingService postingService;
@@ -14,41 +20,74 @@ public class JobPostingController {
         this.postingService = postingService;
     }
 
-    // 1. Students & Admins view approved postings
     @GetMapping
     @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN')")
-    public List<PostingResponse> getApprovedPostings() {
-        return postingService.getApprovedPostings();
+    public Page<PostingResponse> getApprovedPostings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return postingService.listStudentVisible(page, size);
     }
 
-    // 2. Admin views ALL postings (pending, approved, rejected) to manage them
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<PostingResponse> getAllPostingsForAdmin() {
-        return postingService.getAllPostings();
+    public Page<PostingResponse> getAllPostingsForAdmin(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return postingService.listPending(page, size);
     }
 
-    // 3. Company views their own postings
     @GetMapping("/company")
     @PreAuthorize("hasRole('COMPANY')")
-    public List<PostingResponse> getCompanyPostings() {
-        return postingService.getCompanyPostings();
+    public Page<PostingResponse> getCompanyPostings(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        return postingService.listCompanyPostings(page, size);
     }
 
-    // 4. Company creates a new posting (Starts as PENDING)
     @PostMapping
     @PreAuthorize("hasRole('COMPANY')")
     public PostingResponse createPosting(@RequestBody CreatePostingRequest request) {
-        return postingService.createPosting(request);
+        return postingService.create(request);
     }
 
-    // 5. Admin approves or rejects a posting
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public PostingResponse updatePostingStatus(
-            @PathVariable Long id, 
+            @PathVariable Long id,
             @RequestParam PostingStatus status,
             @RequestParam(required = false) String remarks) {
-        return postingService.updateStatus(id, status, remarks);
+        if (status == PostingStatus.APPROVED) {
+            return postingService.approve(id);
+        } else if (status == PostingStatus.REJECTED) {
+            return postingService.reject(id, remarks);
+        }
+        throw new com.credx.campus.common.ApiException(400, "Invalid status update");
     }
+
+    // PERFECT NESTED RECORDS
+    public record CreatePostingRequest(
+        String title,
+        String description,
+        BigDecimal minCgpa,
+        List<String> allowedBranches,
+        Integer gradYear,
+        LocalDate deadline
+    ) {}
+
+    public record PostingResponse(
+        Long id,
+        String title,
+        String description,
+        BigDecimal minCgpa,
+        List<String> allowedBranches,
+        Integer gradYear,
+        LocalDate deadline,
+        PostingStatus status,
+        String rejectionReason,
+        String companyName,
+        Long companyId,
+        Instant approvedAt,
+        Instant createdAt,
+        long applicationCount
+    ) {}
 }

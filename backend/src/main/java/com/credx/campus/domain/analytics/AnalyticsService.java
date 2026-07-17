@@ -1,11 +1,12 @@
 package com.credx.campus.domain.analytics;
 
 import com.credx.campus.domain.application.ApplicationRepository;
-import com.credx.campus.domain.posting.PostingStatus;
+import com.credx.campus.domain.posting.JobPosting.PostingStatus;
 import com.credx.campus.domain.posting.JobPostingRepository;
 import com.credx.campus.domain.user.Role;
 import com.credx.campus.domain.user.UserRepository;
 import org.springframework.stereotype.Service;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,5 +54,20 @@ public class AnalyticsService {
             perCompany,
             postingsByStatus
         );
+    }
+
+    // NESTED RECORD 
+    public record AnalyticsSummary(
+        double placementRate,
+        long totalStudents,
+        long placedStudents,
+        long pendingPostings,
+        long openPostings,
+        long closedPostings,
+        long totalApplications,
+        List<CompanyApplicationCount> applicationsPerCompany,
+        Map<String, Long> postingsByStatus
+    ) {
+        public record CompanyApplicationCount(String companyName, long count) {}
     }
 }

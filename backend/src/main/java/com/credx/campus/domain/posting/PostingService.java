@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -66,8 +67,9 @@ public class PostingService {
         return toResponse(saved, 0);
     }
 
-    public Page<PostingResponse> listCompanyPostings(Long userId, int page, int size) {
-        CompanyProfile company = companyProfileRepository.findByUserId(userId)
+    public Page<PostingResponse> listCompanyPostings(int page, int size) {
+        User companyUser = authHelper.currentUser();
+        CompanyProfile company = companyProfileRepository.findByUserId(companyUser.getId())
             .orElseThrow(() -> new ApiException(404, "Company profile not found"));
         Page<JobPosting> result = postingRepository.findByCompanyId(company.getId(), PageRequest.of(page, size, Sort.by("createdAt").descending()));
         return result.map(p -> toResponse(p, getAppCount(p.getId())));
@@ -76,12 +78,6 @@ public class PostingService {
     public Page<PostingResponse> listStudentVisible(int page, int size) {
         Page<JobPosting> result = postingRepository.findStudentVisible(LocalDate.now(), PageRequest.of(page, size, Sort.by("deadline").ascending()));
         return result.map(p -> toResponse(p, getAppCount(p.getId())));
-    }
-
-    public PostingResponse getStudentVisible(Long id) {
-        JobPosting posting = postingRepository.findStudentVisibleById(id, LocalDate.now())
-            .orElseThrow(() -> new ApiException(404, "Posting not found"));
-        return toResponse(posting, getAppCount(id));
     }
 
     public Page<PostingResponse> listPending(int page, int size) {
