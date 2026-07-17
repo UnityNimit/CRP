@@ -12,6 +12,8 @@ import { StudentApplicationsComponent } from './pages/student-applications.compo
 import { AdminPendingComponent } from './pages/admin-pending.component';
 import { AdminAnalyticsComponent } from './pages/admin-analytics.component';
 import { CompanyRegisterComponent } from './pages/company-register.component';
+import { AdminCompaniesComponent } from './pages/admin-companies.component';
+import { AdminStudentsComponent } from './pages/admin-students.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
@@ -46,5 +48,16 @@ export const routes: Routes = [
     ]
   },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'login' },
+  {
+    path: 'admin',
+    component: ShellComponent,
+    canActivate: [authGuard, roleGuard('ADMIN')],
+    children: [
+      { path: '', component: AdminPendingComponent },
+      { path: 'companies', component: AdminCompaniesComponent }, // NEW
+      { path: 'students', component: AdminStudentsComponent }, // NEW
+      { path: 'analytics', component: AdminAnalyticsComponent }
+    ]
+  }
 ];

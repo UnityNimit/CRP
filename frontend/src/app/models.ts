@@ -78,3 +78,16 @@ export interface EligibilityTip {
   summary: string;
   reasons: string[];
 }
+export interface PendingCompany {
+  id: number;
+  name: string;
+  hrName: string;
+  email: string;
+  website: string;
+}
+
+export interface StudentUploadResult {
+  email: string;
+  status: string;
+  generatedPassword: string;
+}

@@ -96,6 +96,26 @@ export class ApiService {
     return this.http.get<Posting>(`${API_URL}/postings/${id}`);
   }
 
+  pendingCompanies(page = 0, size = 20) {
+    return this.http.get<PageResponse<PendingCompany>>(`${API_URL}/admin/companies/pending`, {
+      params: new HttpParams().set('page', page).set('size', size)
+    });
+  }
+
+  approveCompanyProfile(id: number) {
+    return this.http.post<void>(`${API_URL}/admin/companies/${id}/approve`, {});
+  }
+
+  rejectCompanyProfile(id: number) {
+    return this.http.post<void>(`${API_URL}/admin/companies/${id}/reject`, {});
+  }
+
+  uploadStudentsCsv(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<StudentUploadResult[]>(`${API_URL}/admin/students/upload`, formData);
+  }
+
   // ================= SHARED ACTIONS =================
 
   notifications() {
