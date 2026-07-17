@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../core/api.service';
-import { PageHeaderComponent } from '../../shared/page-header.component';
+import { ApiService } from '../core/api.service';
+import { PageHeaderComponent } from '../components/page-header.component';
 
 @Component({
   selector: 'app-company-create',

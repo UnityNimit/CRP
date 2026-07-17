@@ -8,7 +8,7 @@ import {
   Notification,
   PageResponse,
   Posting
-} from './models';
+} from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

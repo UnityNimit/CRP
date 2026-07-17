@@ -2,10 +2,10 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
-import { ApiService } from '../../core/api.service';
-import { AnalyticsSummary } from '../../core/models';
-import { PageHeaderComponent } from '../../shared/page-header.component';
-import { KpiCardComponent } from '../../shared/kpi-card.component';
+import { ApiService } from '../core/api.service';
+import { AnalyticsSummary } from '../models';
+import { PageHeaderComponent } from '../components/page-header.component';
+import { KpiCardComponent } from '../components/kpi-card.component';
 
 @Component({
   selector: 'app-admin-analytics',

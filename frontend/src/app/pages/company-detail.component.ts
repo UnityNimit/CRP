@@ -1,10 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../core/api.service';
-import { Application, ApplicationStatus } from '../../core/models';
-import { PageHeaderComponent } from '../../shared/page-header.component';
-import { StatusChipComponent } from '../../shared/status-chip.component';
+import { ApiService } from '../core/api.service';
+import { Application, ApplicationStatus } from '../models';
+import { PageHeaderComponent } from '../components/page-header.component';
+import { StatusChipComponent } from '../components/status-chip.component';
 
 @Component({
   selector: 'app-company-detail',

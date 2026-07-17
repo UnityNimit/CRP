@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
-import { LoginResponse, MeResponse } from './models';
+import { LoginResponse, MeResponse } from '../models';
 
 const TOKEN_KEY = 'campus_token';
 const ROLE_KEY = 'campus_role';

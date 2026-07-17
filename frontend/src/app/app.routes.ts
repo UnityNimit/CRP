@@ -2,14 +2,14 @@ import { Routes } from '@angular/router';
 import { authGuard, guestGuard, roleGuard } from './core/auth.guard';
 import { ShellComponent } from './layout/shell.component';
 import { LoginComponent } from './features/auth/login.component';
-import { CompanyHomeComponent } from './features/company/company-home.component';
-import { CompanyCreateComponent } from './features/company/company-create.component';
-import { CompanyDetailComponent } from './features/company/company-detail.component';
+import { CompanyHomeComponent } from './pages/company-home.component';
+import { CompanyCreateComponent } from './pages/company-create.component';
+import { CompanyDetailComponent } from './pages/company-detail.component';
 import { StudentHomeComponent } from './features/student/student-home.component';
 import { StudentJobDetailComponent } from './features/student/student-job-detail.component';
 import { StudentApplicationsComponent } from './features/student/student-applications.component';
-import { AdminPendingComponent } from './features/admin/admin-pending.component';
-import { AdminAnalyticsComponent } from './features/admin/admin-analytics.component';
+import { AdminPendingComponent } from './pages/admin-pending.component';
+import { AdminAnalyticsComponent } from './pages/admin-analytics.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, canActivate: [guestGuard] },
