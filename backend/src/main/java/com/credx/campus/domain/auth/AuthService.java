@@ -11,6 +11,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
+// NESTED DTO IMPORTS FROM AUTH CONTROLLER
+import com.credx.campus.domain.auth.AuthController.LoginRequest;
+import com.credx.campus.domain.auth.AuthController.LoginResponse;
+import com.credx.campus.domain.auth.AuthController.MeResponse;
+
 @Service
 public class AuthService {
 

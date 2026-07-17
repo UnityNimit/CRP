@@ -1,5 +1,6 @@
 package com.credx.campus.domain.posting;
 
+import com.credx.campus.domain.posting.JobPosting.PostingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -7,7 +8,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
@@ -25,6 +25,6 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     long countByStatus(PostingStatus status);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("UPDATE JobPosting p SET p.status = com.credx.campus.domain.posting.PostingStatus.CLOSED WHERE p.status = com.credx.campus.domain.posting.PostingStatus.APPROVED AND p.deadline < :today")
+    @Query("UPDATE JobPosting p SET p.status = com.credx.campus.domain.posting.JobPosting.PostingStatus.CLOSED WHERE p.status = com.credx.campus.domain.posting.JobPosting.PostingStatus.APPROVED AND p.deadline < :today")
     int closeExpiredPostings(@Param("today") LocalDate today);
 }

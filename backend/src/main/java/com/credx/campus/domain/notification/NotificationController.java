@@ -5,6 +5,7 @@ import com.credx.campus.security.AuthHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/api/v1/notifications")
@@ -29,9 +30,11 @@ public class NotificationController {
     ) {
         Long userId = authHelper.currentUser().getId();
         Page<Notification> result = notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(page, size));
+        
         var content = result.getContent().stream()
             .map(n -> new NotificationResponse(n.getId(), n.getMessage(), n.isRead(), n.getCreatedAt()))
             .toList();
+            
         return new PageResponse<>(content, result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
     }
 
@@ -39,4 +42,7 @@ public class NotificationController {
     public void markRead(@PathVariable Long id) {
         notificationService.markRead(id, authHelper.currentUser().getId());
     }
+
+    // Nested Record: Clean and contextual!
+    public record NotificationResponse(Long id, String message, boolean read, Instant createdAt) {}
 }

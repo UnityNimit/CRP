@@ -1,37 +1,19 @@
 spring:
-  application:
-    name: campus-portal
   datasource:
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:campus_portal}?sslMode=VERIFY_IDENTITY&useSSL=true&allowPublicKeyRetrieval=true
-    username: ${DB_USER:root}
-    password: ${DB_PASSWORD:}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
+      # Automatically creates tables in your TiDB database on deployment
       ddl-auto: update
-    show-sql: false
+    show-sql: false # Turn off in production (Render) to keep logs clean
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
-
-server:
-  port: 8080
 
 jwt:
-  secret: ${JWT_SECRET:default-dev-secret-change-in-production-must-be-32-chars-min}
-  expiration-ms: 28800000
-
-app:
-  cors:
-    allowed-origins: http://localhost:4200,http://localhost
-
-logging:
-  level:
-    com.credx.campus: INFO
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health
+  # Cryptographically secure HMAC SHA-256 Key injected from Render
+  secret: ${JWT_SECRET}
+  expiration: 86400000 # 24 Hours

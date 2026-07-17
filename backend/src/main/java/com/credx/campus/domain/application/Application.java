@@ -14,6 +14,10 @@ import java.time.Instant;
 })
 public class Application {
 
+    public enum ApplicationStatus {
+        APPLIED, SHORTLISTED, SELECTED, REJECTED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,6 +40,7 @@ public class Application {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public JobPosting getPosting() { return posting; }

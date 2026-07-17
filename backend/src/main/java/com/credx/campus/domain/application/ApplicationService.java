@@ -1,7 +1,9 @@
 package com.credx.campus.domain.application;
 
 import com.credx.campus.common.ApiException;
-import com.credx.campus.common.PageResponse;
+import com.credx.campus.domain.application.Application.ApplicationStatus;
+import com.credx.campus.domain.application.ApplicationController.ApplyRequest;
+import com.credx.campus.domain.application.ApplicationController.ApplicationResponse;
 import com.credx.campus.domain.company.CompanyProfile;
 import com.credx.campus.domain.company.CompanyProfileRepository;
 import com.credx.campus.domain.notification.NotificationService;
@@ -9,6 +11,7 @@ import com.credx.campus.domain.posting.JobPosting;
 import com.credx.campus.domain.posting.JobPostingRepository;
 import com.credx.campus.domain.student.StudentProfile;
 import com.credx.campus.domain.student.StudentProfileRepository;
+import com.credx.campus.security.AuthHelper;
 import com.credx.campus.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class ApplicationService {
@@ -27,21 +29,25 @@ public class ApplicationService {
     private final StudentProfileRepository studentProfileRepository;
     private final CompanyProfileRepository companyProfileRepository;
     private final NotificationService notificationService;
+    private final AuthHelper authHelper;
 
     public ApplicationService(ApplicationRepository applicationRepository,
                               JobPostingRepository postingRepository,
                               StudentProfileRepository studentProfileRepository,
                               CompanyProfileRepository companyProfileRepository,
-                              NotificationService notificationService) {
+                              NotificationService notificationService,
+                              AuthHelper authHelper) {
         this.applicationRepository = applicationRepository;
         this.postingRepository = postingRepository;
         this.studentProfileRepository = studentProfileRepository;
         this.companyProfileRepository = companyProfileRepository;
         this.notificationService = notificationService;
+        this.authHelper = authHelper;
     }
 
     @Transactional
-    public ApplicationResponse apply(User studentUser, ApplyRequest request) {
+    public ApplicationResponse apply(ApplyRequest request) {
+        User studentUser = authHelper.currentUser();
         StudentProfile student = studentProfileRepository.findByUserId(studentUser.getId())
             .orElseThrow(() -> new ApiException(404, "Student profile not found"));
 
@@ -64,15 +70,17 @@ public class ApplicationService {
         return toResponse(saved);
     }
 
-    public PageResponse<ApplicationResponse> listStudentApplications(Long userId, int page, int size) {
-        StudentProfile student = studentProfileRepository.findByUserId(userId)
+    public Page<ApplicationResponse> listStudentApplications(int page, int size) {
+        User studentUser = authHelper.currentUser();
+        StudentProfile student = studentProfileRepository.findByUserId(studentUser.getId())
             .orElseThrow(() -> new ApiException(404, "Student profile not found"));
         Page<Application> result = applicationRepository.findByStudentId(student.getId(), PageRequest.of(page, size, Sort.by("createdAt").descending()));
-        return toPageResponse(result);
+        return result.map(this::toResponse);
     }
 
-    public PageResponse<ApplicationResponse> listPostingApplications(Long companyUserId, Long postingId, int page, int size) {
-        CompanyProfile company = companyProfileRepository.findByUserId(companyUserId)
+    public Page<ApplicationResponse> listPostingApplications(Long postingId, int page, int size) {
+        User companyUser = authHelper.currentUser();
+        CompanyProfile company = companyProfileRepository.findByUserId(companyUser.getId())
             .orElseThrow(() -> new ApiException(404, "Company profile not found"));
         JobPosting posting = postingRepository.findById(postingId)
             .orElseThrow(() -> new ApiException(404, "Posting not found"));
@@ -80,12 +88,13 @@ public class ApplicationService {
             throw new ApiException(403, "Forbidden");
         }
         Page<Application> result = applicationRepository.findByPostingId(postingId, PageRequest.of(page, size, Sort.by("createdAt").descending()));
-        return toPageResponse(result);
+        return result.map(this::toResponse);
     }
 
     @Transactional
-    public ApplicationResponse updateStatus(Long companyUserId, Long applicationId, ApplicationStatus status) {
-        CompanyProfile company = companyProfileRepository.findByUserId(companyUserId)
+    public ApplicationResponse updateStatus(Long applicationId, ApplicationStatus status) {
+        User companyUser = authHelper.currentUser();
+        CompanyProfile company = companyProfileRepository.findByUserId(companyUser.getId())
             .orElseThrow(() -> new ApiException(404, "Company profile not found"));
 
         Application app = applicationRepository.findById(applicationId)
@@ -104,11 +113,6 @@ public class ApplicationService {
         notificationService.notifyUser(app.getStudent().getUser(),
             "Your application for \"" + app.getPosting().getTitle() + "\" is now " + status.name() + ".");
         return toResponse(saved);
-    }
-
-    private PageResponse<ApplicationResponse> toPageResponse(Page<Application> page) {
-        List<ApplicationResponse> content = page.getContent().stream().map(this::toResponse).toList();
-        return new PageResponse<>(content, page.getNumber(), page.getSize(), page.getTotalElements(), page.getTotalPages());
     }
 
     private ApplicationResponse toResponse(Application app) {

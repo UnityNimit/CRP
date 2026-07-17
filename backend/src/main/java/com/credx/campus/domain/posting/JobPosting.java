@@ -14,6 +14,10 @@ import java.time.LocalDate;
 })
 public class JobPosting {
 
+    public enum PostingStatus {
+        PENDING, APPROVED, REJECTED, CLOSED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,6 +61,7 @@ public class JobPosting {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public CompanyProfile getCompany() { return company; }
@@ -85,7 +90,6 @@ public class JobPosting {
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
 
     public boolean isStudentVisible() {
-        return status == PostingStatus.APPROVED
-            && !deadline.isBefore(LocalDate.now());
+        return status == PostingStatus.APPROVED && !deadline.isBefore(LocalDate.now());
     }
 }
