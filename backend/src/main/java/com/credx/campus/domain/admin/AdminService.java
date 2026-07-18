@@ -66,7 +66,6 @@ public class AdminService {
         CompanyProfile company = companyProfileRepository.findById(companyId)
             .orElseThrow(() -> new ApiException(404, "Company not found"));
         
-        // Hard delete the rejected application to keep the DB clean
         companyProfileRepository.delete(company);
         userRepository.delete(company.getUser());
     }
@@ -78,17 +77,32 @@ public class AdminService {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
             boolean isFirstRow = true;
+            int rowNum = 0;
             
-            // Expected CSV format: Email, FullName, Branch, CGPA, GradYear, FathersName, Attendance, ActiveBacklogs
             while ((line = reader.readLine()) != null) {
-                if (isFirstRow) { isFirstRow = false; continue; } // Skip header
+                rowNum++;
                 
-                String[] data = line.split(",");
-                if (data.length < 8) continue; // Skip invalid rows
+                // Skip the header row
+                if (isFirstRow) { isFirstRow = false; continue; } 
                 
-                String email = data[0].trim();
+                // Bulletproof: Skip empty lines often added by Excel at the bottom of CSVs
+                if (line.trim().isEmpty() || line.trim().equals(",,,,,,,,")) {
+                    continue; 
+                }
                 
-                // Skip if student already exists
+                String[] rawData = line.split(",");
+                if (rawData.length < 8) {
+                    throw new ApiException(400, "Row " + rowNum + " is missing columns. Expected 8, found " + rawData.length + ". Data: " + line);
+                }
+                
+                // Bulletproof: Clean invisible quotes and extra spaces from Excel
+                String[] data = new String[rawData.length];
+                for (int i = 0; i < rawData.length; i++) {
+                    data[i] = rawData[i].replace("\"", "").trim();
+                }
+                
+                String email = data[0];
+                
                 if (userRepository.findByEmail(email).isPresent()) {
                     results.add(new StudentUploadResult(email, "SKIPPED (Already exists)", "N/A"));
                     continue;
@@ -96,27 +110,35 @@ public class AdminService {
 
                 String rawPassword = generateRandomPassword();
                 
-                User user = new User();
-                user.setEmail(email);
-                user.setPasswordHash(passwordEncoder.encode(rawPassword));
-                user.setRole(Role.STUDENT);
-                user.setDisplayName(data[1].trim());
-                user = userRepository.save(user);
+                try {
+                    User user = new User();
+                    user.setEmail(email);
+                    user.setPasswordHash(passwordEncoder.encode(rawPassword));
+                    user.setRole(Role.STUDENT);
+                    user.setDisplayName(data[1]);
+                    user = userRepository.save(user);
 
-                StudentProfile profile = new StudentProfile();
-                profile.setUser(user);
-                profile.setBranch(data[2].trim());
-                profile.setCgpa(new BigDecimal(data[3].trim()));
-                profile.setGradYear(Integer.parseInt(data[4].trim()));
-                profile.setFathersName(data[5].trim());
-                profile.setAttendance(new BigDecimal(data[6].trim()));
-                profile.setActiveBacklogs(Integer.parseInt(data[7].trim()));
-                studentProfileRepository.save(profile);
+                    StudentProfile profile = new StudentProfile();
+                    profile.setUser(user);
+                    profile.setBranch(data[2]);
+                    profile.setCgpa(new BigDecimal(data[3]));
+                    profile.setGradYear(Integer.parseInt(data[4]));
+                    profile.setFathersName(data[5]);
+                    profile.setAttendance(new BigDecimal(data[6]));
+                    profile.setActiveBacklogs(Integer.parseInt(data[7]));
+                    studentProfileRepository.save(profile);
 
-                results.add(new StudentUploadResult(email, "CREATED", rawPassword));
+                    results.add(new StudentUploadResult(email, "CREATED", rawPassword));
+                } catch (NumberFormatException nfe) {
+                    // This will tell you EXACTLY which row and which number broke the math parser!
+                    throw new ApiException(400, "Math Error on Row " + rowNum + " for email '" + email + "'. Ensure CGPA, GradYear, Attendance, and Backlogs contain ONLY numbers, no letters or spaces.");
+                }
             }
+        } catch (ApiException e) {
+            throw e; // Pass our specific error message straight to the frontend
         } catch (Exception e) {
-            throw new ApiException(400, "Failed to parse CSV. Ensure correct format.");
+            e.printStackTrace();
+            throw new ApiException(400, "Corrupt file format. Please ensure you clicked 'File > Download > Comma Separated Values (.csv)'.");
         }
         return results;
     }
