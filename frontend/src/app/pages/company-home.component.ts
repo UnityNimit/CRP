@@ -28,8 +28,9 @@ import { KpiCardComponent } from '../components/kpi-card.component';
 
     <div class="table-container">
       <h3>Active Postings</h3>
+      
       @if (loading) {
-        <p style="color: var(--color-muted); padding: 1rem;">Loading postings…</p>
+        <div class="spinner-container" style="padding: 3rem 0;"><div class="spinner"></div></div>
       } @else if (!postings.length) {
         <app-empty-state title="No roles yet" message="Create your first job posting to start recruiting." />
       } @else {
@@ -72,14 +73,19 @@ import { KpiCardComponent } from '../components/kpi-card.component';
     </div>
   `,
   styles: [`
-    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
-    .table-container { background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); }
-    h3 { margin-top: 0; color: var(--color-ink); border-bottom: 1px solid var(--color-border); padding-bottom: 0.75rem; font-size: 1.1rem; }
-    .row-actions { display: flex; gap: 1rem; align-items: center; }
-    .view-link { color: var(--color-ink); text-decoration: none; font-weight: 500; font-size: 0.85rem; border-bottom: 1px solid transparent; transition: 0.2s; }
-    .view-link:hover { border-bottom-color: var(--color-ink); }
-    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
-    .revision-hint { margin: 0.25rem 0 0; font-size: 0.8rem; color: #facc15; font-weight: 400; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem; }
+    
+    .table-container { background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.5rem 2rem; box-shadow: var(--shadow-sm); }
+    h3 { margin-top: 0; color: var(--color-ink); border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; font-size: 1.15rem; font-weight: 600; }
+    
+    .row-actions { display: flex; gap: 1.25rem; align-items: center; }
+    
+    .view-link { color: var(--color-accent); text-decoration: none; font-weight: 600; font-size: 0.85rem; transition: color 0.2s; }
+    .view-link:hover { color: var(--color-accent-hover); text-decoration: underline; }
+    
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+    .revision-hint { margin: 0.35rem 0 0; font-size: 0.8rem; color: var(--color-warning); font-weight: 500; }
+    
     @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
   `]
 })

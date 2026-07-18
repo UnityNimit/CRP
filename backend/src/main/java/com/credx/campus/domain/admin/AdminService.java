@@ -151,4 +151,8 @@ public class AdminService {
     }
 
     public record StudentUploadResult(String email, String status, String generatedPassword) {}
+
+    public Page<StudentProfile> getAllStudents(Pageable pageable) {
+        return studentProfileRepository.findAll(pageable);
+    }
 }

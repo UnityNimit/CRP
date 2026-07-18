@@ -2,11 +2,14 @@ package com.credx.campus.domain.admin;
 
 import com.credx.campus.common.PageResponse;
 import com.credx.campus.domain.company.CompanyProfile;
+import com.credx.campus.domain.student.StudentProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -48,5 +51,20 @@ public class AdminController {
         return adminService.bulkUploadStudents(file);
     }
 
+    // NEW: Student Directory Endpoint
+    @GetMapping("/students")
+    public PageResponse<StudentResponse> getStudents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        
+        Page<StudentProfile> result = adminService.getAllStudents(PageRequest.of(page, size, Sort.by("user.displayName").ascending()));
+        List<StudentResponse> content = result.getContent().stream()
+            .map(s -> new StudentResponse(s.getId(), s.getUser().getDisplayName(), s.getUser().getEmail(), s.getBranch(), s.getCgpa(), s.getGradYear(), s.getAttendance(), s.getActiveBacklogs()))
+            .toList();
+            
+        return new PageResponse<>(content, result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
+    }
+
     public record CompanyResponse(Long id, String name, String hrName, String email, String website) {}
+    public record StudentResponse(Long id, String name, String email, String branch, BigDecimal cgpa, Integer gradYear, BigDecimal attendance, Integer activeBacklogs) {}
 }

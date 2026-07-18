@@ -151,6 +151,12 @@ export class ApiService {
     return this.http.post<StudentUploadResult[]>(`${API_URL}/admin/students/upload`, formData);
   }
 
+  getAllStudents(page = 0, size = 50) {
+    return this.http.get<PageResponse<Student>>(`${API_URL}/admin/students`, {
+      params: new HttpParams().set('page', page).set('size', size)
+    });
+  }
+
   // ================= SHARED ACTIONS =================
 
   notifications() {

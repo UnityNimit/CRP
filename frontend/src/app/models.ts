@@ -138,3 +138,14 @@ export interface Notification {
   read: boolean;
   createdAt: string;
 }
+
+export interface Student {
+  id: number;
+  name: string;
+  email: string;
+  branch: string;
+  cgpa: number;
+  gradYear: number;
+  attendance: number;
+  activeBacklogs: number;
+}
