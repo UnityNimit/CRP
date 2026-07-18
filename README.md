@@ -24,11 +24,10 @@ Each role operates with isolated permissions enforced using JWT-based authentica
 
 # Video Demonstration
 
->Video
-
-<video src="https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view?usp=drive_link"
+<video
+src="https://github.com/user-attachments/assets/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 controls
-style="max-width:100%;">
+width="100%">
 </video>
 
 ---
