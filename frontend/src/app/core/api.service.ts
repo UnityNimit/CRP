@@ -12,7 +12,8 @@ import {
   PageResponse,
   Posting,
   PendingCompany,
-  StudentUploadResult
+  StudentUploadResult,
+  Student
 } from '../models';
 
 const API_URL =
