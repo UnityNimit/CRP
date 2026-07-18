@@ -11,10 +11,9 @@ import { HttpClient } from '@angular/common/http';
   template: `
     <div class="auth-layout">
       <div class="auth-card">
-        <!-- Left Side: Image -->
+        
         <div class="auth-image"></div>
 
-        <!-- Right Side: Form -->
         <div class="auth-content">
           <div class="brand">
             <h1>Campus Recruiting Portal</h1>
@@ -70,35 +69,34 @@ import { HttpClient } from '@angular/common/http';
     </div>
   `,
   styles: [`
-    .auth-layout { min-height: 100vh; display: grid; place-items: center; background-color: var(--color-bg); padding: 2rem; font-family: var(--font-display); }
-    .auth-card { display: flex; width: 100%; max-width: 1000px; min-height: 650px; background: var(--color-panel); border-radius: 16px; box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--color-border); }
+    .auth-layout { height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background-color: var(--color-bg); padding: 2rem; box-sizing: border-box; overflow: hidden; font-family: var(--font-display); }
+    
+    .auth-card { display: flex; width: 100%; max-width: 1000px; height: 600px; background: var(--color-panel); border-radius: 16px; box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); overflow: hidden; }
+    
     .auth-image { flex: 1; background: #e2e8f0 url('/campus.jpeg') center/cover no-repeat; border-right: 1px solid var(--color-border); }
-    .auth-content { flex: 1; padding: 3rem 4rem; display: flex; flex-direction: column; justify-content: center; }
+    
+    .auth-content { flex: 1; padding: 0 3.5rem; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
     
     .brand { margin-bottom: 2rem; text-align: center; }
     .brand h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; margin: 0; color: var(--color-ink); }
     
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    .input-group { margin-bottom: 1.25rem; }
+    .input-group { margin-bottom: 1rem; }
     label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem; color: var(--color-ink); }
     
     .btn-primary { width: 100%; padding: 0.85rem; margin-top: 0.5rem; font-size: 0.95rem; }
     
-    .error-banner { background: #fee2e2; border: 1px solid #f87171; color: #b91c1c; padding: 0.8rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1.5rem; text-align: center; font-weight: 500; }
+    .error-banner { background: #fee2e2; border: 1px solid #f87171; color: #b91c1c; padding: 0.75rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1rem; text-align: center; font-weight: 500; }
     .success-banner { text-align: center; background: #dcfce7; padding: 2rem; border-radius: 8px; border: 1px solid #86efac; }
     .success-banner h3 { color: #16a34a; margin: 0 0 0.75rem 0; font-size: 1.25rem; }
     .success-banner p { color: var(--color-ink); font-size: 0.95rem; margin: 0; line-height: 1.6; }
     
-    .auth-footer { margin-top: 2rem; text-align: center; border-top: 1px solid var(--color-border); padding-top: 1.5rem; }
+    .auth-footer { margin-top: 1.5rem; text-align: center; border-top: 1px solid var(--color-border); padding-top: 1.25rem; }
     .auth-footer p { font-size: 0.9rem; color: var(--color-muted); margin: 0; }
     .auth-footer a { color: var(--color-accent); text-decoration: none; font-weight: 600; transition: color 0.2s; }
-    .auth-footer a:hover { color: var(--color-accent-hover); text-decoration: underline; }
+    .auth-footer a:hover { text-decoration: underline; }
 
-    @media (max-width: 900px) {
-      .auth-image { display: none; }
-      .auth-content { padding: 3rem 2rem; }
-      .form-row { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 900px) { .auth-image { display: none; } .auth-content { padding: 0 2rem; } .form-row { grid-template-columns: 1fr; gap: 0; } }
   `]
 })
 export class CompanyRegisterComponent {

@@ -11,10 +11,9 @@ import { AuthService } from '../core/auth.service';
   template: `
     <div class="auth-layout">
       <div class="auth-card">
-        <!-- Left Side: Image -->
+        
         <div class="auth-image"></div>
         
-        <!-- Right Side: Form -->
         <div class="auth-content">
           <div class="brand">
             <h1>Campus Recruiting Portal</h1>
@@ -39,20 +38,22 @@ import { AuthService } from '../core/auth.service';
           </form>
 
           <div class="auth-footer">
-            <p>Partner company? <a routerLink="/company-register">Apply to recruit</a></p>
+            <p class="student-note">Students: Login with passwords given by admin.</p>
+            <p style="margin-top: 1.5rem;">Partner company? <a routerLink="/company-register">Apply to recruit</a></p>
           </div>
         </div>
+
       </div>
     </div>
   `,
   styles: [`
-    .auth-layout { min-height: 100vh; display: grid; place-items: center; background-color: var(--color-bg); padding: 2rem; font-family: var(--font-display); }
+    .auth-layout { height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; background-color: var(--color-bg); padding: 2rem; box-sizing: border-box; overflow: hidden; font-family: var(--font-display); }
     
-    .auth-card { display: flex; width: 100%; max-width: 1000px; min-height: 550px; background: var(--color-panel); border-radius: 16px; box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--color-border); }
+    .auth-card { display: flex; width: 100%; max-width: 1000px; height: 600px; background: var(--color-panel); border-radius: 16px; box-shadow: var(--shadow-lg); overflow: hidden; border: 1px solid var(--color-border); }
     
     .auth-image { flex: 1; background: #e2e8f0 url('/campus.jpeg') center/cover no-repeat; border-right: 1px solid var(--color-border); }
     
-    .auth-content { flex: 1; padding: 3rem 4rem; display: flex; flex-direction: column; justify-content: center; }
+    .auth-content { flex: 1; padding: 0 4rem; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
     
     .brand { margin-bottom: 2.5rem; text-align: center; }
     .brand h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; margin: 0; color: var(--color-ink); }
@@ -64,15 +65,13 @@ import { AuthService } from '../core/auth.service';
     
     .error-banner { background: #fee2e2; border: 1px solid #f87171; color: #b91c1c; padding: 0.8rem; border-radius: 6px; font-size: 0.85rem; margin-bottom: 1.5rem; text-align: center; font-weight: 500; }
     
-    .auth-footer { margin-top: 2.5rem; text-align: center; border-top: 1px solid var(--color-border); padding-top: 1.5rem; }
+    .auth-footer { margin-top: 2rem; text-align: center; border-top: 1px solid var(--color-border); padding-top: 1.5rem; }
     .auth-footer p { font-size: 0.9rem; color: var(--color-muted); margin: 0; }
+    .student-note { font-weight: 600; color: var(--color-ink) !important; }
     .auth-footer a { color: var(--color-accent); text-decoration: none; font-weight: 600; transition: color 0.2s; }
-    .auth-footer a:hover { color: var(--color-accent-hover); text-decoration: underline; }
+    .auth-footer a:hover { text-decoration: underline; }
 
-    @media (max-width: 900px) {
-      .auth-image { display: none; }
-      .auth-content { padding: 3rem 2rem; }
-    }
+    @media (max-width: 900px) { .auth-image { display: none; } .auth-content { padding: 0 2rem; } }
   `]
 })
 export class LoginComponent {
@@ -80,25 +79,15 @@ export class LoginComponent {
   private auth = inject(AuthService);
   private router = inject(Router);
 
-  error = '';
-  loading = false;
-
-  form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required]
-  });
+  error = ''; loading = false;
+  form = this.fb.group({ email: ['', [Validators.required, Validators.email]], password: ['', Validators.required] });
 
   submit() {
     if (this.form.invalid) return;
-    this.loading = true;
-    this.error = '';
-    
+    this.loading = true; this.error = '';
     this.auth.login(this.form.value.email!, this.form.value.password!).subscribe({
       next: () => this.router.navigate([this.auth.homeRoute()]),
-      error: (err) => {
-        this.error = err.error?.message || 'Invalid email or password.';
-        this.loading = false;
-      },
+      error: (err) => { this.error = err.error?.message || 'Invalid email or password.'; this.loading = false; },
       complete: () => (this.loading = false)
     });
   }

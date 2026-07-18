@@ -13,7 +13,7 @@ import { EmptyStateComponent } from '../components/empty-state.component';
     <app-page-header title="Recruiter Approvals" subtitle="Verify and approve company accounts before they can post jobs." />
     
     @if (loading) {
-      <div style="color: var(--color-muted); margin-top: 2rem;">Fetching applications...</div>
+      <div class="spinner-container"><div class="spinner"></div></div>
     } @else if (!companies.length) {
       <app-empty-state title="Queue Clear" message="No companies are currently waiting for approval." />
     } @else {
@@ -35,11 +35,12 @@ import { EmptyStateComponent } from '../components/empty-state.component';
     }
   `,
   styles: [`
-    .company-grid { display: grid; gap: 1rem; margin-top: 2rem; }
-    .company-card { display: flex; justify-content: space-between; align-items: center; background: var(--color-panel); padding: 1.5rem 2rem; border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow); }
-    h3 { margin: 0 0 0.5rem 0; color: var(--color-ink); font-size: 1.25rem; }
+    .company-grid { display: grid; gap: 1rem; margin-top: 1.5rem; }
+    .company-card { display: flex; justify-content: space-between; align-items: center; background: var(--color-panel); padding: 1.5rem 2rem; border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow-sm); }
+    h3 { margin: 0 0 0.5rem 0; color: var(--color-ink); font-size: 1.25rem; font-weight: 700; }
     p { margin: 0.35rem 0; color: var(--color-muted); font-size: 0.95rem; }
-    a { color: var(--color-success); text-decoration: none; }
+    strong { color: var(--color-ink); }
+    a { color: var(--color-accent); text-decoration: none; font-weight: 500; }
     a:hover { text-decoration: underline; }
     .actions { display: flex; gap: 0.75rem; }
   `]
