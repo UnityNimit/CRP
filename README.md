@@ -1,104 +1,403 @@
-Here is the exact blueprint for a top-tier, engineering-focused README. It is stripped of all fluff, uses native GitHub rendering tools for the architecture diagram, and follows a strict, stoic, professional tone.
+# Campus Recruitment Platform
 
-### How to upload your Video Demo directly to GitHub:
-GitHub has a built-in CDN for video hosting. You do not need YouTube.
-1. Record your demo video as an `.mp4`.
-2. Go to your repository on GitHub.com and edit the `README.md` file in the browser.
-3. Simply drag and drop your `.mp4` file directly into the GitHub web text editor.
-4. GitHub will upload it and automatically generate a raw URL that looks like `https://github.com/user-attachments/assets/xyz...`.
-5. Take that URL and replace the `YOUR_GITHUB_VIDEO_URL_HERE` placeholder in the code below.
+A full-stack recruitment management platform built to streamline the campus placement process for universities, recruiters, and students.
 
-***
+The platform replaces manual placement workflows with a centralized system for student management, company onboarding, job postings, eligibility verification, application tracking, and recruitment analytics.
 
-Copy the following text exactly as it is and paste it into your `README.md` file.
+---
 
-```markdown
-# Campus Recruitment Platform (CRP)
+## Project Overview
 
-An enterprise-grade campus placement architecture designed for university Training and Placement Offices. Built for scale, mathematical precision, and zero-tolerance eligibility enforcement.
+Traditional placement drives involve spreadsheets, emails, manual eligibility verification, and repetitive administrative work.
 
-## Video Demonstration
+Our goal was to build a platform that automates the complete recruitment lifecycle while ensuring fairness, scalability, and strict eligibility enforcement.
 
-<video src="YOUR_GITHUB_VIDEO_URL_HERE" controls="controls" muted="muted" style="max-width: 100%;"></video>
+The system supports three different user roles:
 
-## System Architecture
+- **Administrator**
+- **Recruiter**
+- **Student**
 
-The platform utilizes a modern, decoupled architecture. The frontend is a strictly typed Single Page Application that communicates with a stateless Spring Boot API, backed by a distributed TiDB SQL database.
+Each role operates with isolated permissions enforced using JWT-based authentication and Spring Security.
+
+---
+
+# Video Demonstration
+
+> Upload your mp4 directly into GitHub and replace the link below.
+
+<video src="YOUR_GITHUB_VIDEO_URL_HERE"
+controls
+style="max-width:100%;">
+</video>
+
+---
+
+# System Architecture
 
 ```mermaid
-graph TD
-    Client[Angular 17 SPA] -->|REST / JWT| API[Spring Boot 3.4 API]
-    
-    subgraph Backend Services
-        API --> Auth[Spring Security / JWT]
-        API --> Engine[Strict Math Eligibility Engine]
-        API --> Batch[CSV Bulk Upload Service]
-        API --> Cron[Scheduled Job Expiry]
-    end
-    
-    Backend Services -->|Hibernate / JPA| DB[(TiDB Distributed SQL)]
+flowchart LR
+
+%% ---------------- CLIENT ----------------
+subgraph CLIENT["Frontend"]
+    A[Angular 17 Application]
+end
+
+%% ---------------- SECURITY ----------------
+subgraph SECURITY["Authentication"]
+    B[Spring Security]
+    C[JWT Authentication]
+end
+
+%% ---------------- BACKEND ----------------
+subgraph BACKEND["Spring Boot Backend"]
+
+D[REST Controllers]
+
+E[Eligibility Engine]
+
+F[Recruitment Management]
+
+G[CSV Import Service]
+
+H[Analytics Service]
+
+I[Scheduler]
+
+J[Notification Layer]
+
+end
+
+%% ---------------- DATABASE ----------------
+subgraph DATABASE["Persistence"]
+
+K[(TiDB Serverless)]
+
+end
+
+%% ---------------- FLOW ----------------
+
+A -->|REST API| D
+
+D --> B
+
+B --> C
+
+D --> E
+
+D --> F
+
+D --> G
+
+D --> H
+
+D --> I
+
+F --> J
+
+E --> K
+F --> K
+G --> K
+H --> K
+I --> K
+
 ```
 
-## Core Engineering Philosophy
+---
 
-This system was built to solve the real-world operational bottlenecks of university placements. 
+# Recruitment Workflow
 
-*   **Strict Mathematical Eligibility:** Application logic does not rely on subjective scoring. The engine uses strict boolean validation against CGPA, academic branch, graduation year, and active backlogs. A single failure point physically prevents database insertion.
-*   **Anti-Hoarding Protocol:** The system enforces a "One Student, One Job" policy. Once a candidate's status transitions to Selected, the system mathematically locks their profile from applying to subsequent postings.
-*   **Closed-Loop Authentication:** Students cannot register. Administrative accounts bulk-provision student credentials via CSV processing directly from university academic records to prevent data tampering.
-*   **Recruiter Verification:** External company accounts are quarantined upon creation. They require manual cryptographic approval by a super-admin before write access to the job posting table is granted.
+```mermaid
+flowchart TD
 
-## Technology Stack
+Student --> Login
 
-**Backend**
-*   Java 21
-*   Spring Boot 3.4
-*   Spring Security 6 (Stateless JWT Authentication)
-*   Hibernate ORM / Spring Data JPA
-*   Jackson (Data binding and JSON parsing)
+Recruiter --> Login
 
-**Frontend**
-*   Angular 17+ (Standalone Component Architecture)
-*   RxJS (Reactive state management)
-*   Chart.js / ng2-charts (Data visualization)
-*   Pure SCSS (Custom design system, zero external UI bloat)
+Admin --> Login
 
-**Infrastructure**
-*   Database: TiDB Serverless
-*   Hosting: Render (Web Services & Static Sites)
+Login --> Dashboard
 
-## Local Development Setup
+Dashboard --> StudentModule
 
-### Prerequisites
-*   JDK 21
-*   Node.js v18+
-*   Maven
+Dashboard --> RecruiterModule
 
-### Backend Setup
-1. Navigate to the `backend` directory.
-2. Configure your environment variables or `application.yml` with the following keys:
-    *   `DB_URL`
-    *   `DB_USERNAME`
-    *   `DB_PASSWORD`
-    *   `JWT_SECRET`
-    *   `JWT_EXPIRATION_MS` (Defaults to 86400000 if omitted)
-    *   `APP_CORS_ALLOWED_ORIGINS` (Set to `*` for local testing)
-3. Execute the Spring Boot application:
+Dashboard --> AdminModule
+
+RecruiterModule --> CreateJob
+
+CreateJob --> EligibilityValidation
+
+EligibilityValidation --> PublishJob
+
+StudentModule --> BrowseJobs
+
+BrowseJobs --> Apply
+
+Apply --> EligibilityEngine
+
+EligibilityEngine -->|Eligible| ApplicationStored
+
+EligibilityEngine -->|Rejected| RejectApplication
+
+ApplicationStored --> RecruiterDashboard
+
+RecruiterDashboard --> Shortlist
+
+Shortlist --> Selected
+
+Selected --> PlacementStatistics
+
+AdminModule --> CSVUpload
+
+CSVUpload --> StudentDatabase
+
+PlacementStatistics --> AnalyticsDashboard
+```
+
+---
+
+# Core Features
+
+## Student Portal
+
+- Secure JWT authentication
+- Browse available companies
+- Automatic eligibility validation
+- One-click job applications
+- Track application status
+- Placement history
+
+---
+
+## Recruiter Portal
+
+- Company profile management
+- Create recruitment drives
+- Define eligibility criteria
+- Review applicants
+- Shortlist candidates
+- Update recruitment status
+
+---
+
+## Administrator Portal
+
+- Complete platform management
+- Student bulk upload through CSV
+- Recruiter verification
+- Job approval and moderation
+- Placement analytics
+- User management
+
+---
+
+# Eligibility Engine
+
+One of the core components of the platform is the eligibility engine.
+
+Every application is validated using predefined recruitment constraints before it is stored.
+
+The validation pipeline includes:
+
+- Minimum CGPA
+- Academic Branch
+- Graduation Year
+- Active Backlogs
+- Attendance Requirement (optional)
+- Already Placed Validation
+- Company-specific eligibility rules
+
+Only applications satisfying every condition are persisted to the database.
+
+---
+
+# Technology Stack
+
+## Frontend
+
+| Technology | Purpose |
+|------------|----------|
+| Angular 17 | Single Page Application |
+| TypeScript | Type Safety |
+| RxJS | Reactive Programming |
+| SCSS | Styling |
+| Chart.js | Analytics Dashboard |
+
+---
+
+## Backend
+
+| Technology | Purpose |
+|------------|----------|
+| Java 21 | Backend Language |
+| Spring Boot 3 | REST API |
+| Spring Security | Authentication |
+| JWT | Authorization |
+| Hibernate ORM | ORM |
+| Spring Data JPA | Database Access |
+| Maven | Dependency Management |
+
+---
+
+## Database
+
+| Technology | Purpose |
+|------------|----------|
+| TiDB Serverless | Distributed SQL Database |
+
+---
+
+## Deployment
+
+| Component | Platform |
+|-----------|----------|
+| Backend | Render |
+| Frontend | Render Static Site |
+| Database | TiDB Cloud |
+
+---
+
+# Security Design
+
+The platform follows stateless authentication.
+
+```text
+User Login
+      │
+      ▼
+Authentication Manager
+      │
+      ▼
+JWT Generated
+      │
+      ▼
+Frontend Stores Token
+      │
+      ▼
+Every Request
+      │
+      ▼
+JWT Filter
+      │
+      ▼
+Spring Security
+      │
+      ▼
+Authorized Endpoint
+```
+
+---
+
+# Project Structure
+
+```text
+Campus-Recruitment-Platform
+
+├── backend
+│   ├── controller
+│   ├── service
+│   ├── repository
+│   ├── entity
+│   ├── dto
+│   ├── config
+│   ├── security
+│   └── util
+│
+├── frontend
+│   ├── src
+│   │   ├── app
+│   │   ├── pages
+│   │   ├── shared
+│   │   ├── services
+│   │   └── guards
+│
+└── README.md
+```
+
+---
+
+# Local Development
+
+## Prerequisites
+
+- Java 21
+- Maven
+- Node.js 18+
+- Angular CLI
+- Git
+
+---
+
+## Backend
+
 ```bash
+cd backend
+
 ./mvnw spring-boot:run
 ```
-The server will initialize on port 8080. A database seeder will automatically inject super-admin accounts on the initial run.
 
-### Frontend Setup
-1. Navigate to the `frontend` directory.
-2. Install dependencies:
+Environment Variables
+
+```text
+DB_URL
+
+DB_USERNAME
+
+DB_PASSWORD
+
+JWT_SECRET
+
+JWT_EXPIRATION_MS
+
+APP_CORS_ALLOWED_ORIGINS
+```
+
+Backend runs on
+
+```
+localhost:8080
+```
+
+---
+
+## Frontend
+
 ```bash
+cd frontend
+
 npm install
+
+npm start
 ```
-3. Start the Angular development server:
-```bash
-npm run start
-```
-The application will bind to `localhost:4200` and automatically proxy API requests to port 8080.
+
+Frontend runs on
 
 ```
+localhost:4200
+```
+
+---
+
+# Future Enhancements
+
+- Resume parsing using AI
+- Email notifications
+- Interview scheduling
+- Company analytics dashboard
+- Student recommendation engine
+- Resume ranking
+- Placement prediction
+- OCR-based transcript verification
+
+---
+
+# Team
+
+Built during the hackathon by our team with a focus on scalable backend architecture, secure authentication, and an intuitive user experience.
+
+---
+
+# License
+
+This project is intended for educational and hackathon purposes.
