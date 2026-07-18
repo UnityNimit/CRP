@@ -24,7 +24,7 @@ Each role operates with isolated permissions enforced using JWT-based authentica
 
 # Video Demonstration
 
-> Upload your mp4 directly into GitHub and replace the link below.
+>Video
 
 <video src="https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view?usp=drive_link"
 controls
