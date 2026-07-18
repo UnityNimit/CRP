@@ -45,8 +45,8 @@ public class AdminService {
         this.notificationService = notificationService;
     }
 
-    public Page<CompanyProfile> getPendingCompanies(Pageable pageable) {
-        return companyProfileRepository.findByApprovedFalse(pageable);
+    public Page<CompanyProfile> getAllCompanies(Pageable pageable) {
+        return companyProfileRepository.findAll(pageable);
     }
 
     @Transactional

@@ -222,10 +222,9 @@ public class PostingService {
             .map(p -> toResponse(p, getAppCount(p.getId())));
     }
 
-    public Page<PostingResponse> listPending(int page, int size) {
-        return postingRepository.findByStatus(PostingStatus.PENDING_REVIEW,
-                PageRequest.of(page, size, Sort.by("createdAt").ascending()))
-            .map(p -> toAdminResponse(p, getAppCount(p.getId())));
+    public Page<PostingResponse> listAllAdminPostings(int page, int size) {
+        Page<JobPosting> result = postingRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        return result.map(p -> toResponse(p, getAppCount(p.getId())));
     }
 
     @Transactional

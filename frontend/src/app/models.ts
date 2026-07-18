@@ -118,12 +118,13 @@ export interface EligibilityTip {
   checks: string[];
 }
 
-export interface PendingCompany {
+export interface Company {
   id: number;
   name: string;
   hrName: string;
   email: string;
   website: string;
+  approved: boolean;
 }
 
 export interface StudentUploadResult {

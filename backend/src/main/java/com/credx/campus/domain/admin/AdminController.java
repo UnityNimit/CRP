@@ -23,14 +23,15 @@ public class AdminController {
         this.adminService = adminService;
     }
 
-    @GetMapping("/companies/pending")
-    public PageResponse<CompanyResponse> getPendingCompanies(
+    // FIX: Now fetches ALL companies, not just pending ones
+    @GetMapping("/companies")
+    public PageResponse<CompanyResponse> getAllCompanies(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "50") int size) {
         
-        Page<CompanyProfile> result = adminService.getPendingCompanies(PageRequest.of(page, size));
+        Page<CompanyProfile> result = adminService.getAllCompanies(PageRequest.of(page, size));
         List<CompanyResponse> content = result.getContent().stream()
-            .map(c -> new CompanyResponse(c.getId(), c.getName(), c.getUser().getDisplayName(), c.getUser().getEmail(), c.getWebsite()))
+            .map(c -> new CompanyResponse(c.getId(), c.getName(), c.getUser().getDisplayName(), c.getUser().getEmail(), c.getWebsite(), c.isApproved()))
             .toList();
             
         return new PageResponse<>(content, result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
@@ -51,7 +52,6 @@ public class AdminController {
         return adminService.bulkUploadStudents(file);
     }
 
-    // NEW: Student Directory Endpoint
     @GetMapping("/students")
     public PageResponse<StudentResponse> getStudents(
             @RequestParam(defaultValue = "0") int page,
@@ -65,6 +65,7 @@ public class AdminController {
         return new PageResponse<>(content, result.getNumber(), result.getSize(), result.getTotalElements(), result.getTotalPages());
     }
 
-    public record CompanyResponse(Long id, String name, String hrName, String email, String website) {}
+    // FIX: Added 'approved' boolean to record
+    public record CompanyResponse(Long id, String name, String hrName, String email, String website, boolean approved) {}
     public record StudentResponse(Long id, String name, String email, String branch, BigDecimal cgpa, Integer gradYear, BigDecimal attendance, Integer activeBacklogs) {}
 }

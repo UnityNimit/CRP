@@ -36,10 +36,8 @@ public class JobPostingController {
 
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<PostingResponse> getAllPostingsForAdmin(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size) {
-        return postingService.listPending(page, size);
+    public Page<PostingResponse> getAllPostingsForAdmin(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "50") int size) {
+        return postingService.listAllAdminPostings(page, size);
     }
 
     @GetMapping("/company")
