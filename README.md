@@ -1,6 +1,6 @@
 # Campus Recruitment Platform (CRP)
 
-> Enterprise-grade campus placement infrastructure for Training & Placement Offices — designed for **workflow correctness**, **recruiter throughput**, and **measurable hiring integrity**.
+> Enterprise-grade campus placement infrastructure for Training & Placement Offices - designed for **workflow correctness**, **recruiter throughput**, and **measurable hiring integrity**.
 
 [![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](#technology-stack)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-6DB33F?logo=springboot&logoColor=white)](#technology-stack)
@@ -25,11 +25,11 @@ University placement systems usually fail in three places:
 
 ---
 
+
 ## Video Demonstration
 
-[![Campus Recruitment Demo](frontend/public/campus.jpeg)](https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view)
+[![Campus Recruitment Demo](frontend/public/Screenshot%202026-07-18%20161201.png)](https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view)
 
-**[▶ Watch the demo](https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view)**
 
 ---
 
@@ -47,7 +47,7 @@ Job postings are not free-form CRUD. They move through a **guarded state machine
 
 ### 2. Batch Actions + CSV Hub + Student Kanban
 - **Company:** Material data-grid with multi-select, bulk Shortlist / Reject, and one-click CSV export (Name, Email, CGPA, Branch, Status, Resume)
-- **Student:** Kanban board — Applied → Under review → Shortlisted → Offered / Rejected
+- **Student:** Kanban board - Applied → Under review → Shortlisted → Offered / Rejected
 
 ### 3. Ghost-Rate Trust Score (hiring integrity metric)
 Trust is computed from **closed postings only** (open cycles are excluded):
@@ -194,7 +194,7 @@ flowchart TD
 ## Role Portals
 
 ### Student
-- JWT login (provisioned by admin CSV — no self-registration)
+- JWT login (provisioned by admin CSV - no self-registration)
 - Browse live postings + one-click apply
 - Automatic eligibility validation
 - Kanban application tracking
@@ -215,14 +215,14 @@ flowchart TD
 
 ## Core Engineering Philosophy
 
-- **Strict mathematical eligibility** — CGPA, branch, graduation year, backlogs. Any failure blocks insert.
-- **Anti-hoarding protocol** — once `SELECTED`, the student is locked from further applications.
-- **Closed-loop student auth** — students are not self-registered; admins provision via CSV from academic records.
-- **Recruiter quarantine** — company accounts require admin approval before posting rights.
-- **Guarded workflows** — posting transitions are centralized; illegal moves never silently corrupt state.
-- **Audit-capable revisions** — snapshots + diffs make administrative decisions explainable.
-- **Sample-aware analytics** — thin history never becomes a false HIGH-risk accusation.
-- **Ops throughput** — bulk mutations share one `applyStatusChange` path (single source of truth).
+- **Strict mathematical eligibility** - CGPA, branch, graduation year, backlogs. Any failure blocks insert.
+- **Anti-hoarding protocol** - once `SELECTED`, the student is locked from further applications.
+- **Closed-loop student auth** - students are not self-registered; admins provision via CSV from academic records.
+- **Recruiter quarantine** - company accounts require admin approval before posting rights.
+- **Guarded workflows** - posting transitions are centralized; illegal moves never silently corrupt state.
+- **Audit-capable revisions** - snapshots + diffs make administrative decisions explainable.
+- **Sample-aware analytics** - thin history never becomes a false HIGH-risk accusation.
+- **Ops throughput** - bulk mutations share one `applyStatusChange` path (single source of truth).
 
 ---
 
@@ -299,16 +299,3 @@ App: `http://localhost:4200` (proxies `/api` → `:8080`)
 
 ---
 
-## What judges should notice
-
-1. **Not a CRUD demo** — posting lifecycle is a real FSM with conflict-safe transitions.
-2. **Operational realism** — recruiters get Excel-grade bulk tools; students get pipeline clarity.
-3. **Integrity metric** — trust scoring is closed-cycle, sample-gated, and wired into approval UX.
-4. **Production hygiene** — schema migration for status expansion, seeded accounts, smoke scripts.
-5. **Clean separation** — Angular SPA ↔ JWT API ↔ TiDB, with domain services instead of controller soup.
-
----
-
-## License
-
-Built for hackathon evaluation. All rights reserved by the CRP team.
