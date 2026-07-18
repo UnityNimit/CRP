@@ -10,4 +10,8 @@ public interface CompanyProfileRepository extends JpaRepository<CompanyProfile, 
     
     // NEW: Fetch all companies waiting for approval
     Page<CompanyProfile> findByApprovedFalse(Pageable pageable);
+
+    long countByApprovedTrue();
+
+    long countByApprovedFalse();
 }

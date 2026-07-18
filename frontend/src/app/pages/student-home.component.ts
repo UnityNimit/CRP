@@ -24,4 +24,17 @@ export class StudentHomeComponent implements OnInit {
       error: () => (this.loading = false)
     });
   }
+
+  get availableRoles() {
+    return this.postings.length;
+  }
+
+  get companies() {
+    return new Set(this.postings.map(posting => posting.companyName)).size;
+  }
+
+  get soonestDeadline() {
+    if (!this.postings.length) return 'No open roles';
+    return [...this.postings].map(posting => posting.deadline).sort()[0] || 'No open roles';
+  }
 }

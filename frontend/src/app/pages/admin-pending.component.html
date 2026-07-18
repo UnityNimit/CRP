@@ -1,13 +1,44 @@
 <app-page-header title="Pending approvals" subtitle="Postings cannot reach students until you approve them." />
 
+@if (summary) {
+  <div class="kpis">
+    <app-kpi-card label="Pending roles" [value]="summary.pendingPostings" [hint]="summary.openPostings + ' already live'" />
+    <app-kpi-card label="Placement rate" [value]="summary.placementRate + '%'" [hint]="summary.placedStudents + ' of ' + summary.totalStudents + ' students placed'" />
+    <app-kpi-card label="Company approval" [value]="summary.companyApprovalRate + '%'" [hint]="summary.approvedCompanies + ' approved recruiters'" />
+    <app-kpi-card label="Applications" [value]="summary.totalApplications" [hint]="summary.totalCompanies + ' companies in the system'" />
+  </div>
+}
+
+<div class="toolbar panel">
+  <div>
+    <strong>{{ visiblePostings().length }}</strong>
+    <span>pending roles</span>
+  </div>
+  <div class="toolbar-actions">
+    <input
+      type="search"
+      [value]="searchTerm"
+      (input)="searchTerm = $any($event.target).value"
+      placeholder="Search title, company, branch"
+    />
+    @if (searchTerm) {
+      <button class="btn btn-secondary" type="button" (click)="searchTerm = ''">Clear</button>
+    }
+  </div>
+</div>
+
 @if (message) { <p class="success">{{ message }}</p> }
 
 <div class="layout">
   <div class="list">
-    @if (!postings.length) {
-      <app-empty-state title="Queue clear" message="No postings awaiting approval." />
+    @if (!visiblePostings().length) {
+      @if (searchTerm) {
+        <app-empty-state title="No matches" message="No postings match your search criteria." />
+      } @else {
+        <app-empty-state title="Queue clear" message="No postings awaiting approval." />
+      }
     } @else {
-      @for (p of postings; track p.id) {
+      @for (p of visiblePostings(); track p.id) {
         <button class="queue-item" [class.active]="selected?.id === p.id" (click)="select(p)">
           <strong>{{ p.title }}</strong>
           <span>{{ p.companyName }}</span>
@@ -42,7 +73,37 @@
 </div>
 
 <style>
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
   .layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 1rem; }
+  .panel {
+    background: var(--color-panel);
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+  }
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .toolbar strong { display: block; font-size: 1.2rem; color: var(--color-ink); }
+  .toolbar span { color: var(--color-muted); font-size: 0.85rem; }
+  .toolbar-actions { display: flex; align-items: center; gap: 0.75rem; }
+  .toolbar input {
+    min-width: 260px;
+    background: #111;
+    border: 1px solid var(--color-border);
+    color: var(--color-ink);
+    border-radius: 8px;
+    padding: 0.8rem 0.9rem;
+  }
   .queue-item {
     display: block; width: 100%; text-align: left; background: var(--color-panel);
     border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1rem;
@@ -55,5 +116,11 @@
   .actions { margin: 1rem 0; }
   .reject-form { border-top: 1px solid var(--color-border); padding-top: 1rem; }
   .success { color: var(--color-success); }
-  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) {
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .layout { grid-template-columns: 1fr; }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .toolbar-actions { width: 100%; }
+    .toolbar input { min-width: 0; width: 100%; }
+  }
 </style>

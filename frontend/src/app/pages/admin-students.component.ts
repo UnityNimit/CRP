@@ -9,7 +9,9 @@ import { PageHeaderComponent } from '../components/page-header.component';
   standalone: true,
   imports: [CommonModule, PageHeaderComponent],
   template: `
-    <app-page-header title="Student Management" subtitle="Bulk upload student profiles from the university database via CSV." />
+    <app-page-header title="Student Management" subtitle="Bulk upload student profiles from the university database via CSV.">
+      <button class="btn-secondary" type="button" (click)="downloadTemplate()">Download template</button>
+    </app-page-header>
 
     <div class="upload-panel">
       <div class="instructions">
@@ -31,8 +33,11 @@ import { PageHeaderComponent } from '../components/page-header.component';
     @if (results.length > 0) {
       <div class="results-panel">
         <div class="results-header">
-          <h3>System Upload Report</h3>
-          <button class="btn-secondary" (click)="downloadReport()">Download Passwords</button>
+          <div>
+            <h3>System Upload Report</h3>
+            <p>{{ createdCount() }} created · {{ skippedCount() }} skipped</p>
+          </div>
+          <button class="btn-secondary" (click)="downloadReport()">Download passwords</button>
         </div>
         <table class="data-table">
           <thead>
@@ -110,8 +115,8 @@ export class AdminStudentsComponent {
   }
 
   downloadReport() {
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + "Email,Status,Password\n" 
+    const csvContent = "data:text/csv;charset=utf-8,"
+      + "Email,Status,Password\n"
       + this.results.map(e => `${e.email},${e.status},${e.generatedPassword}`).join("\n");
     
     const encodedUri = encodeURI(csvContent);
@@ -121,5 +126,27 @@ export class AdminStudentsComponent {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  downloadTemplate() {
+    const csvContent = "data:text/csv;charset=utf-8,"
+      + "Email,FullName,Branch,CGPA,GradYear,FathersName,Attendance,ActiveBacklogs\n"
+      + "student1@crp.com,Ananya Sharma,CSE,8.4,2026,Rajesh Sharma,92,0";
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'student_upload_template.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  createdCount() {
+    return this.results.filter(result => result.status === 'CREATED').length;
+  }
+
+  skippedCount() {
+    return this.results.filter(result => result.status !== 'CREATED').length;
   }
 }

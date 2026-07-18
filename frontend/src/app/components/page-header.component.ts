@@ -20,9 +20,16 @@ import { Component, Input } from '@angular/core';
       gap: 1rem;
       margin-bottom: 1.5rem;
       flex-wrap: wrap;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
     }
-    p { margin: 0; color: var(--color-muted); }
-    .actions { display: flex; gap: 0.5rem; align-items: center; }
+    h1 {
+      margin: 0 0 0.25rem 0;
+      font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+      letter-spacing: -0.04em;
+    }
+    p { margin: 0; color: var(--color-muted); max-width: 68ch; line-height: 1.6; }
+    .actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
   `]
 })
 export class PageHeaderComponent {

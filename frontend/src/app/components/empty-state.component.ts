@@ -12,13 +12,15 @@ import { Component, Input } from '@angular/core';
   styles: [`
     .empty {
       text-align: center;
-      padding: 3rem 1rem;
+      padding: 3.5rem 1rem;
       color: var(--color-muted);
-      background: var(--color-panel);
-      border-radius: var(--radius);
-      border: 1px dashed var(--color-border);
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.78), rgba(8, 15, 30, 0.82));
+      border-radius: 24px;
+      border: 1px dashed rgba(148, 163, 184, 0.22);
+      box-shadow: var(--shadow-soft);
     }
-    h3 { color: var(--color-ink); }
+    h3 { color: var(--color-ink); margin-bottom: 0.4rem; }
+    p { max-width: 50ch; margin: 0 auto; line-height: 1.6; }
   `]
 })
 export class EmptyStateComponent {

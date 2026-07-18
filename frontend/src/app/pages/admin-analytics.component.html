@@ -1,14 +1,16 @@
 <app-page-header
   title="Recruiting analytics"
-  subtitle="Placement rate = students with ≥1 selected offer ÷ total students."
+  subtitle="Placement rate = students with at least one selected offer divided by total students."
 />
 
 @if (summary) {
   <div class="kpis">
     <app-kpi-card label="Placement rate" [value]="summary.placementRate + '%'" [hint]="summary.placedStudents + ' of ' + summary.totalStudents + ' students placed'" />
+    <app-kpi-card label="Company approval" [value]="summary.companyApprovalRate + '%'" [hint]="summary.approvedCompanies + ' approved / ' + summary.totalCompanies + ' total companies'" />
     <app-kpi-card label="Pending approvals" [value]="summary.pendingPostings" />
     <app-kpi-card label="Open roles" [value]="summary.openPostings" />
     <app-kpi-card label="Total applications" [value]="summary.totalApplications" />
+    <app-kpi-card label="Active companies" [value]="summary.approvedCompanies" [hint]="summary.pendingCompanies + ' still under review'" />
   </div>
 
   <div class="charts">

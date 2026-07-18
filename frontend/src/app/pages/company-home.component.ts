@@ -34,4 +34,20 @@ export class CompanyHomeComponent implements OnInit {
     if (!confirm(`Close posting "${p.title}"? Students will no longer be able to apply.`)) return;
     this.api.closePosting(p.id).subscribe({ next: () => this.reload() });
   }
+
+  get totalPostings() {
+    return this.postings.length;
+  }
+
+  get activePostings() {
+    return this.postings.filter(posting => posting.status === 'APPROVED').length;
+  }
+
+  get pendingPostings() {
+    return this.postings.filter(posting => posting.status === 'PENDING').length;
+  }
+
+  get closedPostings() {
+    return this.postings.filter(posting => posting.status === 'CLOSED').length;
+  }
 }

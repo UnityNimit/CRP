@@ -10,10 +10,34 @@ import { AuthService } from '../core/auth.service';
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
     <div class="auth-layout">
+      <div class="hero-panel">
+        <div class="hero-badge">CRP // Campus recruiting orchestration</div>
+        <h1>Move from approvals to placements faster.</h1>
+        <p>
+          A role-based platform for the placement cell, companies, and students, with approvals, analytics,
+          and bulk onboarding built in.
+        </p>
+
+        <div class="hero-stats">
+          <div>
+            <strong>3 roles</strong>
+            <span>admin, company, student</span>
+          </div>
+          <div>
+            <strong>Live insights</strong>
+            <span>applications, approvals, rates</span>
+          </div>
+          <div>
+            <strong>Bulk flow</strong>
+            <span>CSV onboarding for students</span>
+          </div>
+        </div>
+      </div>
+
       <div class="auth-container">
         <div class="brand">
-          <h1>CRP.</h1>
-          <p>Campus Recruitment Platform</p>
+          <div class="brand-mark">CRP.</div>
+          <p>Campus Recruiting Platform</p>
         </div>
 
         <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
@@ -29,14 +53,14 @@ import { AuthService } from '../core/auth.service';
 
           @if (error) { <div class="error-banner">{{ error }}</div> }
 
-          <button type="submit" class="btn-primary" [disabled]="loading || form.invalid">
+          <button type="submit" class="btn-primary auth-button" [disabled]="loading || form.invalid">
             {{ loading ? 'Authenticating...' : 'Sign in' }}
           </button>
         </form>
 
         <div class="auth-footer">
           <p>Partner company? <a routerLink="/company-register">Apply to recruit</a></p>
-          <p class="student-note">Students: Use the credentials provided by the Placement Cell.</p>
+          <p class="student-note">Students use the credentials shared by the Placement Cell.</p>
         </div>
       </div>
     </div>
@@ -45,111 +69,147 @@ import { AuthService } from '../core/auth.service';
     .auth-layout {
       min-height: 100vh;
       display: grid;
-      place-items: center;
-      background-color: #000000;
-      color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      grid-template-columns: minmax(0, 1.2fr) minmax(360px, 420px);
+      gap: 1.5rem;
+      padding: 2rem;
+      align-items: center;
+    }
+    .hero-panel,
+    .auth-container {
+      border: 1px solid var(--color-border);
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(15, 23, 42, 0.74), rgba(8, 15, 30, 0.88));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+    .hero-panel {
+      padding: 3.5rem;
+      background:
+        radial-gradient(circle at top right, rgba(125, 211, 252, 0.18), transparent 28%),
+        linear-gradient(160deg, rgba(15, 23, 42, 0.82), rgba(8, 15, 30, 0.95));
+    }
+    .hero-badge {
+      display: inline-flex;
+      padding: 0.45rem 0.8rem;
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      border-radius: 999px;
+      color: #bae6fd;
+      background: rgba(14, 165, 233, 0.08);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+    .hero-panel h1 {
+      font-size: clamp(2.2rem, 4vw, 4.4rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      margin: 0;
+      max-width: 10ch;
+    }
+    .hero-panel p {
+      max-width: 58ch;
+      color: var(--color-muted);
+      font-size: 1.02rem;
+      line-height: 1.7;
+      margin: 1.25rem 0 0;
+    }
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+      margin-top: 2rem;
+    }
+    .hero-stats div {
+      padding: 1rem;
+      border-radius: 20px;
+      background: rgba(2, 6, 23, 0.38);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .hero-stats strong {
+      display: block;
+      color: var(--color-ink);
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+    .hero-stats span {
+      color: var(--color-muted);
+      font-size: 0.82rem;
     }
     .auth-container {
       width: 100%;
-      max-width: 400px;
-      padding: 3rem 2.5rem;
-      background: #0a0a0a;
-      border: 1px solid #222222;
-      border-radius: 12px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+      max-width: 460px;
+      padding: 2rem;
+      margin-inline: auto;
     }
     .brand {
-      margin-bottom: 2.5rem;
-      text-align: center;
+      margin-bottom: 1.75rem;
     }
-    .brand h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      letter-spacing: -0.05em;
-      margin: 0 0 0.2rem 0;
-      color: #ffffff;
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(148, 163, 184, 0.8));
+      color: #08111f;
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.35);
+      margin-bottom: 1rem;
     }
     .brand p {
-      font-size: 0.85rem;
-      color: #888888;
+      font-size: 0.8rem;
+      color: var(--color-muted);
       margin: 0;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.14em;
+    }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
     .input-group {
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.25rem;
     }
     label {
       display: block;
       font-size: 0.8rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-      color: #aaaaaa;
-    }
-    input {
-      width: 100%;
-      padding: 0.85rem 1rem;
-      background: #000000;
-      border: 1px solid #333333;
-      border-radius: 6px;
-      color: #ffffff;
-      font-size: 0.95rem;
-      transition: all 0.2s ease;
-      box-sizing: border-box;
-    }
-    input:focus {
-      outline: none;
-      border-color: #ffffff;
-      box-shadow: 0 0 0 1px #ffffff;
-    }
-    input::placeholder {
-      color: #444444;
-    }
-    .btn-primary {
-      width: 100%;
-      padding: 0.9rem;
-      background: #ffffff;
-      color: #000000;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.95rem;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      color: #cbd5e1;
     }
-    .btn-primary:hover:not([disabled]) {
-      background: #dddddd;
-    }
-    .btn-primary[disabled] {
-      background: #333333;
-      color: #666666;
-      cursor: not-allowed;
+    .auth-button {
+      width: 100%;
+      margin-top: 0.4rem;
     }
     .error-banner {
-      background: #2a0a0a;
-      border: 1px solid #5a1a1a;
-      color: #ff6b6b;
-      padding: 0.75rem;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      margin-bottom: 1.5rem;
+      background: rgba(127, 29, 29, 0.24);
+      border: 1px solid rgba(251, 113, 133, 0.24);
+      color: #fecdd3;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      font-size: 0.86rem;
+      margin: 0.2rem 0 0.25rem;
       text-align: center;
     }
     .auth-footer {
-      margin-top: 2.5rem;
+      margin-top: 1.4rem;
       text-align: center;
-      border-top: 1px solid #222222;
-      padding-top: 1.5rem;
+      border-top: 1px solid rgba(148, 163, 184, 0.14);
+      padding-top: 1.2rem;
     }
     .auth-footer p {
-      font-size: 0.85rem;
-      color: #888888;
+      font-size: 0.86rem;
+      color: var(--color-muted);
       margin: 0.5rem 0;
     }
     .auth-footer a {
-      color: #ffffff;
+      color: #e0f2fe;
       text-decoration: none;
       font-weight: 500;
       transition: color 0.2s;
@@ -158,9 +218,20 @@ import { AuthService } from '../core/auth.service';
       text-decoration: underline;
     }
     .student-note {
-      font-size: 0.75rem !important;
-      color: #555555 !important;
+      font-size: 0.76rem !important;
+      color: #64748b !important;
       margin-top: 1rem !important;
+    }
+    @media (max-width: 980px) {
+      .auth-layout {
+        grid-template-columns: 1fr;
+      }
+      .hero-panel {
+        padding: 2rem;
+      }
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
     }
   `]
 })

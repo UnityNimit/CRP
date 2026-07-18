@@ -9,18 +9,19 @@ import { CommonModule } from '@angular/common';
   styles: [`
     .chip {
       display: inline-block;
-      padding: 0.2rem 0.55rem;
-      border-radius: var(--radius);
+      padding: 0.35rem 0.72rem;
+      border-radius: 999px;
       font-size: 0.75rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.03em;
-      transition: background 0.18s ease, color 0.18s ease;
+      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+      border: 1px solid transparent;
     }
-    .pending { background: #fdf4e3; color: var(--color-warning); }
-    .approved, .selected, .shortlisted { background: #e6f4ec; color: var(--color-success); }
-    .rejected { background: #fdecea; color: var(--color-danger); }
-    .closed, .applied { background: #eef2f6; color: var(--color-muted); }
+    .pending { background: rgba(251, 191, 36, 0.12); color: #fbbf24; border-color: rgba(251, 191, 36, 0.18); }
+    .approved, .selected, .shortlisted { background: rgba(52, 211, 153, 0.12); color: #34d399; border-color: rgba(52, 211, 153, 0.18); }
+    .rejected { background: rgba(251, 113, 133, 0.10); color: #fb7185; border-color: rgba(251, 113, 133, 0.18); }
+    .closed, .applied { background: rgba(148, 163, 184, 0.10); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.16); }
   `]
 })
 export class StatusChipComponent {

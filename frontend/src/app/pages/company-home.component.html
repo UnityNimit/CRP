@@ -7,6 +7,13 @@
 } @else if (!postings.length) {
   <app-empty-state title="No postings yet" message="Create your first role to start recruiting." />
 } @else {
+  <div class="summary-grid">
+    <div class="summary-card"><strong>{{ totalPostings }}</strong><span>Total postings</span></div>
+    <div class="summary-card"><strong>{{ activePostings }}</strong><span>Live postings</span></div>
+    <div class="summary-card"><strong>{{ pendingPostings }}</strong><span>Awaiting approval</span></div>
+    <div class="summary-card"><strong>{{ closedPostings }}</strong><span>Closed roles</span></div>
+  </div>
+
   <table class="data-table">
     <thead>
       <tr>

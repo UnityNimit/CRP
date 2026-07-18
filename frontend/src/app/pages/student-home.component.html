@@ -5,6 +5,12 @@
 } @else if (!postings.length) {
   <app-empty-state title="No open roles" message="Check back after the placement cell approves new postings." />
 } @else {
+  <div class="summary-grid">
+    <div class="summary-card"><strong>{{ availableRoles }}</strong><span>Open roles</span></div>
+    <div class="summary-card"><strong>{{ companies }}</strong><span>Hiring companies</span></div>
+    <div class="summary-card"><strong>{{ soonestDeadline }}</strong><span>Nearest deadline</span></div>
+  </div>
+
   <div class="job-list">
     @for (p of postings; track p.id) {
       <article class="job-card">
@@ -21,6 +27,30 @@
 
 <style>
   .job-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .summary-card {
+    padding: 1rem 1.1rem;
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.8), rgba(8, 15, 30, 0.85));
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    box-shadow: var(--shadow-soft);
+  }
+  .summary-card strong {
+    display: block;
+    font-size: 1.1rem;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.2rem;
+  }
+  .summary-card span {
+    color: var(--color-muted);
+    font-size: 0.82rem;
+  }
   .job-card {
     display: flex; justify-content: space-between; align-items: center; gap: 1rem;
     background: var(--color-panel); padding: 1.1rem 1.25rem; border-radius: var(--radius);
@@ -28,4 +58,8 @@
   }
   .company { color: var(--color-accent); font-weight: 600; margin: 0.25rem 0; }
   .meta { color: var(--color-muted); font-size: 0.85rem; margin: 0; }
+  @media (max-width: 900px) {
+    .summary-grid { grid-template-columns: 1fr; }
+    .job-card { flex-direction: column; align-items: flex-start; }
+  }
 </style>

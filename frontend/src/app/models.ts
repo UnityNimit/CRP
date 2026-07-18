@@ -58,6 +58,10 @@ export interface AnalyticsSummary {
   placementRate: number;
   totalStudents: number;
   placedStudents: number;
+  totalCompanies: number;
+  approvedCompanies: number;
+  pendingCompanies: number;
+  companyApprovalRate: number;
   pendingPostings: number;
   openPostings: number;
   closedPostings: number;
