@@ -44,48 +44,59 @@ import { EmptyStateComponent } from '../components/empty-state.component';
             Reject
           </button>
         </div>
-        <button class="btn-secondary btn-sm" (click)="exportCsv()">
+        <button class="btn-secondary btn-sm export-btn" (click)="exportCsv()">
           Export Eligible Applicants to CSV
         </button>
       </div>
 
-      <div class="table-container mat-elevation-z1">
+      <div class="table-container">
         <table mat-table [dataSource]="applications" class="applicant-table">
+          
+          <!-- Checkbox Column -->
           <ng-container matColumnDef="select">
             <th mat-header-cell *matHeaderCellDef>
               <mat-checkbox
                 (change)="$event ? toggleAllRows() : null"
                 [checked]="selection.hasValue() && isAllSelected()"
-                [indeterminate]="selection.hasValue() && !isAllSelected()" />
+                [indeterminate]="selection.hasValue() && !isAllSelected()"
+                color="primary">
+              </mat-checkbox>
             </th>
             <td mat-cell *matCellDef="let row">
               <mat-checkbox
                 (click)="$event.stopPropagation()"
                 (change)="$event ? selection.toggle(row) : null"
-                [checked]="selection.isSelected(row)" />
+                [checked]="selection.isSelected(row)"
+                color="primary">
+              </mat-checkbox>
             </td>
           </ng-container>
 
+          <!-- Name Column -->
           <ng-container matColumnDef="studentName">
             <th mat-header-cell *matHeaderCellDef>Name</th>
-            <td mat-cell *matCellDef="let row"><strong>{{ row.studentName }}</strong></td>
+            <td mat-cell *matCellDef="let row"><strong style="color: var(--color-ink);">{{ row.studentName }}</strong></td>
           </ng-container>
 
+          <!-- Email Column -->
           <ng-container matColumnDef="studentEmail">
             <th mat-header-cell *matHeaderCellDef>Email</th>
-            <td mat-cell *matCellDef="let row">{{ row.studentEmail }}</td>
+            <td mat-cell *matCellDef="let row">{{ row.studentEmail || 'N/A' }}</td>
           </ng-container>
 
+          <!-- CGPA Column -->
           <ng-container matColumnDef="studentCgpa">
             <th mat-header-cell *matHeaderCellDef>CGPA</th>
-            <td mat-cell *matCellDef="let row">{{ row.studentCgpa }}</td>
+            <td mat-cell *matCellDef="let row"><strong>{{ row.studentCgpa || row.cgpa }}</strong></td>
           </ng-container>
 
+          <!-- Branch Column -->
           <ng-container matColumnDef="studentBranch">
             <th mat-header-cell *matHeaderCellDef>Branch</th>
-            <td mat-cell *matCellDef="let row">{{ row.studentBranch }}</td>
+            <td mat-cell *matCellDef="let row"><span class="branch-tag">{{ row.studentBranch }}</span></td>
           </ng-container>
 
+          <!-- Resume Column -->
           <ng-container matColumnDef="resumeLink">
             <th mat-header-cell *matHeaderCellDef>Resume</th>
             <td mat-cell *matCellDef="let row">
@@ -93,11 +104,13 @@ import { EmptyStateComponent } from '../components/empty-state.component';
             </td>
           </ng-container>
 
+          <!-- Status Column -->
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Status</th>
             <td mat-cell *matCellDef="let row"><app-status-chip [status]="row.status" /></td>
           </ng-container>
 
+          <!-- Actions Column -->
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>Actions</th>
             <td mat-cell *matCellDef="let row" class="actions">
@@ -115,39 +128,28 @@ import { EmptyStateComponent } from '../components/empty-state.component';
     }
   `,
   styles: [`
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
-    }
-    .bulk-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .table-container {
-      background: var(--color-panel);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      overflow-x: auto;
-      box-shadow: var(--shadow);
-    }
-    .applicant-table { width: 100%; }
-    .resume-link { color: var(--color-success); font-weight: 500; text-decoration: none; font-size: 0.9rem; }
-    .resume-link:hover { text-decoration: underline; }
-    .actions { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-    .btn-sm { padding: 0.45rem 0.75rem; font-size: 0.8rem; }
-    .btn-xs { padding: 0.3rem 0.5rem; font-size: 0.7rem; }
-    .success-banner {
-      background: #0a2a1a;
-      border: 1px solid #1a5a2a;
-      color: var(--color-success);
-      padding: 1rem;
-      border-radius: var(--radius);
-      margin-bottom: 1rem;
-      font-weight: 500;
-    }
-    .hint { color: var(--color-muted); font-size: 0.85rem; margin-top: 0.75rem; }
-    th.mat-mdc-header-cell, td.mat-mdc-cell { padding: 0.65rem 0.75rem !important; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .bulk-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    
+    .table-container { background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--radius); overflow-x: auto; box-shadow: var(--shadow-sm); }
+    .applicant-table { width: 100%; background: transparent !important; }
+    
+    /* OVERRIDING DEFAULT ANGULAR MATERIAL STYLES */
+    ::ng-deep .mat-mdc-table { font-family: var(--font-display) !important; background: transparent !important; }
+    ::ng-deep .mat-mdc-header-cell { background: #f8fafc !important; color: var(--color-muted) !important; font-weight: 600 !important; font-size: 0.75rem !important; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid var(--color-border) !important; }
+    ::ng-deep .mat-mdc-cell { border-bottom: 1px solid var(--color-border) !important; color: var(--color-ink) !important; font-size: 0.9rem !important; }
+    
+    .branch-tag { background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; border: 1px solid var(--color-border); }
+    .resume-link { color: var(--color-accent); font-weight: 600; text-decoration: none; font-size: 0.85rem; transition: 0.2s; }
+    .resume-link:hover { color: var(--color-accent-hover); text-decoration: underline; }
+    
+    .actions { display: flex; gap: 0.5rem; align-items: center; }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
+    .btn-xs { padding: 0.35rem 0.6rem; font-size: 0.75rem; border-radius: 4px; }
+    .export-btn { background: #f8fafc; border-color: #cbd5e1; }
+    
+    .success-banner { background: var(--color-success-bg); border: 1px solid #86efac; color: var(--color-success); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; font-weight: 500; font-size: 0.95rem; }
+    .hint { color: var(--color-muted); font-size: 0.85rem; margin-top: 1rem; text-align: right; }
   `]
 })
 export class CompanyDetailComponent implements OnInit {
@@ -190,7 +192,7 @@ export class CompanyDetailComponent implements OnInit {
     if (!confirm(`Update ${ids.length} applicant(s) to ${status}?`)) return;
 
     this.api.bulkUpdateApplicationStatus(ids, status).subscribe({
-      next: res => {
+      next: (res) => {
         const failed = res.failed.length ? ` (${res.failed.length} failed)` : '';
         this.message = `Updated ${res.updated} applicant(s) to ${status}${failed}`;
         this.load();
@@ -212,7 +214,7 @@ export class CompanyDetailComponent implements OnInit {
 
   exportCsv() {
     exportApplicantsCsv(this.applications, this.postingId);
-    this.message = 'CSV export started';
-    setTimeout(() => (this.message = ''), 2000);
+    this.message = 'CSV export started successfully.';
+    setTimeout(() => (this.message = ''), 3000);
   }
 }

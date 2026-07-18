@@ -21,7 +21,7 @@ export interface PageResponse<T> {
   totalPages: number;
 }
 
-export type PostingStatus = 'DRAFT' | 'PENDING_REVIEW' | 'NEEDS_REVISION' | 'APPROVED' | 'REJECTED' | 'CLOSED';
+export type PostingStatus = 'PENDING' | 'DRAFT' | 'PENDING_REVIEW' | 'NEEDS_REVISION' | 'APPROVED' | 'REJECTED' | 'CLOSED';
 export type ApplicationStatus = 'APPLIED' | 'SHORTLISTED' | 'SELECTED' | 'REJECTED';
 
 export interface FieldChange {
@@ -90,6 +90,7 @@ export interface BulkStatusResponse {
   updated: number;
   failed: { id: number; reason: string }[];
 }
+
 
 export interface AnalyticsSummary {
   placementRate: number;
