@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../core/auth.service';
@@ -15,7 +15,6 @@ import { AuthService } from '../core/auth.service';
           <span class="brand-role">{{ auth.role }}</span>
         </div>
         <nav>
-          <!-- FIX: Forced strict array-based router link to bust cache and routing bugs -->
           @for (item of navItems(); track item.label) {
             <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: item.exact }">
               {{ item.label }}
@@ -25,29 +24,28 @@ import { AuthService } from '../core/auth.service';
       </aside>
       <div class="main">
         <header class="topbar">
-          <span class="welcome">Welcome, {{ auth.displayName }}</span>
-          <button class="btn-secondary" (click)="logout()">Sign out</button>
+          <span class="welcome">Welcome back, <strong>{{ auth.displayName }}</strong></span>
+          <button class="btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem;" (click)="logout()">Sign out</button>
         </header>
-        <main class="content">
-          <router-outlet></router-outlet>
-        </main>
+        <main class="content"><router-outlet></router-outlet></main>
       </div>
     </div>
   `,
   styles: [`
-    .shell { display: flex; min-height: 100vh; background: var(--color-bg); color: var(--color-ink); }
-    .sidebar { width: 260px; background: var(--color-panel); border-right: 1px solid var(--color-border); display: flex; flex-direction: column; padding: 2.5rem 1.5rem; }
-    .brand { margin-bottom: 3rem; }
-    .brand-name { font-size: 1.5rem; font-weight: 700; display: block; margin-bottom: 0.35rem; color: #fff; letter-spacing: -0.03em; }
-    .brand-role { font-size: 0.75rem; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.05em; padding: 0.2rem 0.5rem; background: #222; border-radius: 4px; display: inline-block; font-weight: 600; }
-    nav { display: flex; flex-direction: column; gap: 0.5rem; }
-    nav a { color: var(--color-muted); text-decoration: none; padding: 0.85rem 1rem; border-radius: 6px; font-size: 0.95rem; font-weight: 500; transition: all 0.2s; display: block; }
-    nav a:hover { color: #fff; background: #1a1a1a; }
-    nav a.active { background: #fff; color: #000; font-weight: 600; }
-    .main { flex: 1; display: flex; flex-direction: column; }
-    .topbar { height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 3rem; border-bottom: 1px solid var(--color-border); background: var(--color-panel); }
+    .shell { display: flex; min-height: 100vh; background: var(--color-bg); }
+    .sidebar { width: 260px; background: var(--color-panel); border-right: 1px solid var(--color-border); display: flex; flex-direction: column; padding: 2rem 1.5rem; z-index: 10; }
+    .brand { margin-bottom: 2.5rem; padding: 0 0.5rem; }
+    .brand-name { font-size: 1.5rem; font-weight: 800; display: block; margin-bottom: 0.25rem; color: var(--color-ink); letter-spacing: -0.03em; }
+    .brand-role { font-size: 0.7rem; color: var(--color-accent); text-transform: uppercase; letter-spacing: 0.05em; padding: 0.2rem 0.5rem; background: #eff6ff; border-radius: 4px; display: inline-block; font-weight: 600; }
+    nav { display: flex; flex-direction: column; gap: 0.25rem; }
+    nav a { color: var(--color-muted); text-decoration: none; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.9rem; font-weight: 500; transition: all 0.2s ease; display: block; }
+    nav a:hover { color: var(--color-ink); background: #f1f5f9; }
+    nav a.active { background: #eff6ff; color: var(--color-accent); font-weight: 600; }
+    .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+    .topbar { height: 64px; display: flex; justify-content: space-between; align-items: center; padding: 0 2.5rem; border-bottom: 1px solid var(--color-border); background: var(--color-panel); z-index: 5; box-shadow: var(--shadow-sm); }
     .welcome { font-size: 0.9rem; color: var(--color-muted); }
-    .content { padding: 3rem; flex: 1; overflow-y: auto; background: var(--color-bg); }
+    .welcome strong { color: var(--color-ink); font-weight: 600; }
+    .content { padding: 2.5rem; flex: 1; overflow-y: auto; background: var(--color-bg); }
   `]
 })
 export class ShellComponent {
@@ -56,28 +54,9 @@ export class ShellComponent {
 
   navItems() {
     const role = this.auth.role;
-    if (role === 'COMPANY') {
-      return [
-        { path: ['/company'], label: 'Postings', exact: true },
-        { path: ['/company', 'new'], label: 'New posting', exact: false }
-      ];
-    }
-    if (role === 'STUDENT') {
-      return [
-        { path: ['/student'], label: 'Browse roles', exact: true },
-        { path: ['/student', 'applications'], label: 'My applications', exact: false }
-      ];
-    }
-    // FIX: Using exact route arrays ensures Angular never gets lost
-    return [
-      { path: ['/admin'], label: 'Job Approvals', exact: true },
-      { path: ['/admin', 'companies'], label: 'Recruiters', exact: false },
-      { path: ['/admin', 'students'], label: 'Students', exact: false },
-      { path: ['/admin', 'analytics'], label: 'Analytics', exact: false }
-    ];
+    if (role === 'COMPANY') return [ { path: ['/company'], label: 'Dashboard', exact: true }, { path: ['/company', 'new'], label: 'Post a Role', exact: false } ];
+    if (role === 'STUDENT') return [ { path: ['/student'], label: 'Browse Jobs', exact: true }, { path: ['/student', 'applications'], label: 'My Applications', exact: false } ];
+    return [ { path: ['/admin'], label: 'Job Approvals', exact: true }, { path: ['/admin', 'companies'], label: 'Recruiters', exact: false }, { path: ['/admin', 'students'], label: 'Students', exact: false }, { path: ['/admin', 'analytics'], label: 'Analytics', exact: false } ];
   }
-
-  logout() {
-    this.auth.logout();
-  }
+  logout() { this.auth.logout(); }
 }

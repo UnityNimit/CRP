@@ -35,12 +35,13 @@ import { PageHeaderComponent } from '../components/page-header.component';
               }
             </ul>
             @if (!eligibility.eligible) {
-              <div class="blocker-msg">SYSTEM BLOCK: You do not meet the strict mathematical requirements or placement policies for this role.</div>
+              <div class="blocker-msg">
+                <strong>SYSTEM BLOCK:</strong> You do not meet the strict mathematical requirements or placement policies for this role.
+              </div>
             }
           </section>
         }
 
-        <!-- Only render the Apply form if the backend math says TRUE -->
         @if (eligibility?.eligible) {
           <section class="panel">
             <h3>Submit Application</h3>
@@ -64,33 +65,34 @@ import { PageHeaderComponent } from '../components/page-header.component';
     }
   `,
   styles: [`
-    .detail-grid { display: grid; gap: 1.5rem; }
-    .panel { background: var(--color-panel); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--color-border); box-shadow: var(--shadow); }
-    h3 { margin-top: 0; color: var(--color-ink); border-bottom: 1px solid var(--color-border); padding-bottom: 0.75rem; font-size: 1.15rem; }
-    .desc { color: #ccc; line-height: 1.6; margin-bottom: 1.5rem; }
+    .detail-grid { display: grid; gap: 1.5rem; max-width: 900px; }
+    .panel { background: var(--color-panel); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); }
+    h3 { margin-top: 0; color: var(--color-ink); border-bottom: 1px solid var(--color-border); padding-bottom: 0.75rem; font-size: 1.15rem; font-weight: 600; }
+    
+    .desc { color: var(--color-muted); line-height: 1.6; margin-bottom: 1.5rem; font-size: 0.95rem; }
     .req-list { list-style: none; padding: 0; margin: 0; }
-    .req-list li { padding: 0.5rem 0; border-bottom: 1px dashed #333; color: #aaa; }
+    .req-list li { padding: 0.75rem 0; border-bottom: 1px solid var(--color-border); color: var(--color-ink); font-size: 0.95rem; }
     .req-list li:last-child { border-bottom: none; }
-    .req-list strong { color: #fff; display: inline-block; width: 160px; }
+    .req-list strong { color: var(--color-muted); display: inline-block; width: 160px; font-weight: 600; }
     
     /* Strict Criteria Box */
-    .criteria-box { border-left: 4px solid var(--color-muted); }
-    .criteria-box.eligible { border-left-color: var(--color-success); }
-    .criteria-box.ineligible { border-left-color: var(--color-danger); }
+    .criteria-box { border-left: 4px solid var(--color-border); }
+    .criteria-box.eligible { border-left-color: var(--color-success); background: var(--color-success-bg); }
+    .criteria-box.ineligible { border-left-color: var(--color-danger); background: var(--color-danger-bg); }
     
     .check-list { list-style: none; padding: 0; margin-top: 1rem; }
-    .check-list li { padding: 0.6rem 0; border-bottom: 1px solid #1a1a1a; color: #ddd; font-family: monospace; font-size: 0.95rem; }
+    .check-list li { padding: 0.6rem 0; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--color-ink); font-family: monospace; font-size: 0.9rem; }
     .check-list li.fail { color: var(--color-danger); font-weight: 600; }
     .check-list li:last-child { border-bottom: none; }
     
-    .blocker-msg { background: #2a0a0a; color: #ff6b6b; padding: 1rem; border-radius: 6px; margin-top: 1.5rem; font-weight: 600; font-size: 0.9rem; border: 1px solid #5a1a1a; }
+    .blocker-msg { background: #ffffff; color: var(--color-danger); padding: 1rem; border-radius: 6px; margin-top: 1.5rem; font-weight: 500; font-size: 0.9rem; border: 1px solid #fca5a5; box-shadow: var(--shadow-sm); }
     
     .form-group { margin-bottom: 1.5rem; }
-    label { display: block; margin-bottom: 0.5rem; color: var(--color-muted); font-size: 0.9rem; font-weight: 500; }
-    .error-txt { color: var(--color-danger); font-size: 0.8rem; display: block; margin-top: 0.4rem; }
+    label { display: block; margin-bottom: 0.5rem; color: var(--color-ink); font-size: 0.9rem; font-weight: 600; }
+    .error-txt { color: var(--color-danger); font-size: 0.8rem; display: block; margin-top: 0.4rem; font-weight: 500; }
     
-    .success-banner { background: #0a2a1a; border: 1px solid #1a5a2a; color: var(--color-success); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; font-weight: 500; font-size: 0.9rem; }
-    .error-banner { background: #2a0a0a; border: 1px solid #5a1a1a; color: #ff6b6b; padding: 1rem; border-radius: 6px; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .success-banner { background: var(--color-success-bg); border: 1px solid #86efac; color: var(--color-success); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; font-weight: 500; font-size: 0.9rem; }
+    .error-banner { background: var(--color-danger-bg); border: 1px solid #fca5a5; color: var(--color-danger); padding: 1rem; border-radius: 6px; font-size: 0.9rem; margin-bottom: 1.5rem; font-weight: 500; }
   `]
 })
 export class StudentJobDetailComponent implements OnInit {
@@ -105,7 +107,6 @@ export class StudentJobDetailComponent implements OnInit {
   error = '';
   loading = false;
   
-  // Strict URL Validation for Resume
   form = this.fb.group({ 
     resumeLink: ['', [Validators.required, Validators.pattern('https?://.+')]] 
   });

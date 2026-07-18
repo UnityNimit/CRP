@@ -56,21 +56,26 @@ import { PageHeaderComponent } from '../components/page-header.component';
     }
   `,
   styles: [`
-    .upload-panel { background: var(--color-panel); border: 1px dashed #444; border-radius: var(--radius); padding: 2.5rem; margin-top: 2rem; margin-bottom: 2rem; }
-    .instructions h3 { margin-top: 0; color: var(--color-ink); }
-    .instructions p { color: var(--color-muted); font-size: 0.95rem; }
-    code { background: #111; padding: 0.75rem 1rem; border-radius: 6px; display: inline-block; margin: 1rem 0; font-family: monospace; color: #4ade80; border: 1px solid #333; font-size: 0.9rem; }
-    .file-action { display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem; }
-    .upload-btn { padding: 0.85rem 1.5rem; font-size: 0.95rem; }
+    .upload-panel { background: var(--color-panel); border: 2px dashed #cbd5e1; border-radius: var(--radius); padding: 2.5rem; margin-top: 1.5rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm); transition: border-color 0.2s; }
+    .upload-panel:hover { border-color: var(--color-accent); }
+    
+    .instructions h3 { margin-top: 0; color: var(--color-ink); font-size: 1.15rem; font-weight: 600; }
+    .instructions p { color: var(--color-muted); font-size: 0.95rem; margin-bottom: 1rem; }
+    code { background: #f1f5f9; padding: 0.5rem 0.8rem; border-radius: 6px; display: inline-block; margin: 1rem 0; font-family: monospace; color: var(--color-ink); border: 1px solid var(--color-border); font-size: 0.85rem; }
+    
+    .file-action { display: flex; align-items: center; gap: 1.5rem; margin-top: 1.5rem; }
+    .upload-btn { padding: 0.75rem 1.5rem; font-size: 0.95rem; }
     .file-name { color: var(--color-muted); font-size: 0.95rem; font-weight: 500; }
-    .error-banner { background: #2a0a0a; border: 1px solid #5a1a1a; color: #ff6b6b; padding: 1rem; border-radius: 6px; font-size: 0.9rem; margin-top: 1.5rem; }
+    
+    .error-banner { background: var(--color-danger-bg); border: 1px solid #fca5a5; color: var(--color-danger); padding: 1rem; border-radius: 6px; font-size: 0.9rem; margin-top: 1.5rem; font-weight: 500; }
     
     .results-panel { background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-    .results-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid var(--color-border); }
-    .results-header h3 { margin: 0; font-size: 1.2rem; }
+    .results-header { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--color-border); background: #f8fafc; }
+    .results-header h3 { margin: 0; font-size: 1.1rem; font-weight: 600; color: var(--color-ink); }
+    
     .text-success { color: var(--color-success); font-weight: 600; font-size: 0.85rem; }
     .text-warning { color: var(--color-warning); font-weight: 600; font-size: 0.85rem; }
-    .pass-code { display: inline-block; padding: 0.3rem 0.6rem; margin: 0; background: #000; border: 1px solid #222; color: #fff; }
+    .pass-code { display: inline-block; padding: 0.25rem 0.5rem; margin: 0; background: #ffffff; border: 1px solid var(--color-border); color: var(--color-ink); border-radius: 4px; font-weight: 500; }
   `]
 })
 export class AdminStudentsComponent {
