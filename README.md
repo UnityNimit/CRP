@@ -24,11 +24,7 @@ Each role operates with isolated permissions enforced using JWT-based authentica
 
 # Video Demonstration
 
-<video
-src="https://github.com/user-attachments/assets/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-controls
-width="100%">
-</video>
+[![Campus Recruitment Demo](assets/demo.png)](https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view)
 
 ---
 
