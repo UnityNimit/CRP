@@ -12,6 +12,23 @@ A full-stack recruitment platform that replaces spreadsheet-driven placement ops
 
 ---
 
+## Video Demonstration
+
+[![Campus Recruitment Demo](frontend/public/Screenshot%202026-07-18%20161201.png)](https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view)
+
+
+---
+
+## Demo Credentials
+
+| Role | Email | Password |
+|---|---|---|
+| Admin | `admin-sejal@crp.com` | `B5jW3qL8zT` |
+| Company | `micorsoft@career.outlook.in` | `microsoft` |
+| Student | `lonavlakhandala@abc.com` | `hE3HHExIFc` |
+
+---
+
 ## Why this exists
 
 University placement systems usually fail in three places:
@@ -26,12 +43,7 @@ University placement systems usually fail in three places:
 ---
 
 
-## Video Demonstration
 
-[![Campus Recruitment Demo](frontend/public/Screenshot%202026-07-18%20161201.png)](https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view)
-
-
----
 
 ## Signature Features
 
@@ -289,13 +301,5 @@ App: `http://localhost:4200` (proxies `/api` → `:8080`)
 
 ---
 
-## Demo Credentials
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | `admin@campus.edu` | `password123` |
-| Company | `hr@techcorp.com` | `password123` |
-| Student | `alice@student.edu` | `password123` |
-
----
 
