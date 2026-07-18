@@ -25,6 +25,15 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     @Query("SELECT COUNT(a) FROM Application a WHERE a.posting.company.id = :companyId AND a.status = :status")
     long countByCompanyIdAndStatus(@Param("companyId") Long companyId, @Param("status") ApplicationStatus status);
 
+    @Query("SELECT COUNT(a) FROM Application a WHERE a.posting.company.id = :companyId AND a.posting.status = 'CLOSED'")
+    long countClosedPostingAppsByCompanyId(@Param("companyId") Long companyId);
+
+    @Query("SELECT COUNT(a) FROM Application a WHERE a.posting.company.id = :companyId AND a.posting.status = 'CLOSED' AND a.status = :status")
+    long countClosedPostingAppsByCompanyIdAndStatus(@Param("companyId") Long companyId, @Param("status") ApplicationStatus status);
+
+    @Query("SELECT COUNT(a) FROM Application a WHERE a.posting.company.id = :companyId AND a.posting.status = 'CLOSED' AND a.status IN ('SHORTLISTED', 'SELECTED', 'REJECTED')")
+    long countReviewedOnClosedPostings(@Param("companyId") Long companyId);
+
     @Query("SELECT COUNT(DISTINCT a.student.id) FROM Application a WHERE a.status = 'SELECTED'")
     long countDistinctSelectedStudents();
 

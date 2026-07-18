@@ -46,12 +46,20 @@ import { KpiCardComponent } from '../components/kpi-card.component';
           <tbody>
             @for (p of postings; track p.id) {
               <tr>
-                <td><strong>{{ p.title }}</strong></td>
+                <td>
+                  <strong>{{ p.title }}</strong>
+                  @if (p.status === 'NEEDS_REVISION' && p.revisionComment) {
+                    <p class="revision-hint">{{ p.revisionComment }}</p>
+                  }
+                </td>
                 <td>{{ p.deadline }}</td>
                 <td><app-status-chip [status]="p.status" /></td>
                 <td>{{ p.applicationCount }}</td>
                 <td class="row-actions">
                   <a [routerLink]="['/company/postings', p.id]" class="view-link">Review Applicants</a>
+                  @if (p.status === 'DRAFT' || p.status === 'NEEDS_REVISION') {
+                    <a [routerLink]="['/company/postings', p.id, 'edit']" class="view-link">Edit</a>
+                  }
                   @if (p.status === 'APPROVED') {
                     <button class="btn-secondary btn-sm" (click)="close(p)">Close Role</button>
                   }
@@ -71,6 +79,7 @@ import { KpiCardComponent } from '../components/kpi-card.component';
     .view-link { color: var(--color-ink); text-decoration: none; font-weight: 500; font-size: 0.85rem; border-bottom: 1px solid transparent; transition: 0.2s; }
     .view-link:hover { border-bottom-color: var(--color-ink); }
     .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+    .revision-hint { margin: 0.25rem 0 0; font-size: 0.8rem; color: #facc15; font-weight: 400; }
     @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
   `]
 })

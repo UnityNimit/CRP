@@ -21,6 +21,47 @@
       <canvas baseChart [data]="doughnutData" type="doughnut"></canvas>
     </section>
   </div>
+
+  @if (summary.ghostLeaderboard && summary.ghostLeaderboard.length) {
+    <section class="leaderboard-panel">
+      <h3>Highest-risk recruiters</h3>
+      <p class="leaderboard-note">Ranked by ghost rate on closed roles (black-hole + zero-offer signals).</p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Risk</th>
+            <th>Trust</th>
+            <th>Ghost %</th>
+            <th>Black-hole %</th>
+            <th>Closed apps</th>
+            <th>Offers</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of summary.ghostLeaderboard; track c.companyId) {
+            <tr>
+              <td><strong>{{ c.companyName }}</strong></td>
+              <td>
+                <span
+                  class="risk-tag"
+                  [class.risk-high]="c.riskLevel === 'HIGH'"
+                  [class.risk-medium]="c.riskLevel === 'MEDIUM'"
+                  [class.risk-low]="c.riskLevel === 'LOW'">
+                  {{ c.riskLevel }}
+                </span>
+              </td>
+              <td>{{ c.trustScore }}</td>
+              <td>{{ c.ghostRate }}%</td>
+              <td>{{ c.blackHoleRate }}%</td>
+              <td>{{ c.closedApps }}</td>
+              <td>{{ c.closedOffers }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+  }
 }
 
 <style>
@@ -46,4 +87,18 @@
     .kpis { grid-template-columns: repeat(2, 1fr); }
     .charts { grid-template-columns: 1fr; }
   }
+  .leaderboard-panel {
+    margin-top: 1.5rem;
+    background: var(--color-panel);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow);
+  }
+  .leaderboard-panel h3 { margin-top: 0; }
+  .leaderboard-note { color: var(--color-muted); font-size: 0.85rem; margin: 0 0 1rem; }
+  .risk-tag { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.45rem; border-radius: var(--radius); }
+  .risk-tag.risk-high { background: #3f1515; color: #ff6b6b; }
+  .risk-tag.risk-medium { background: #3a2a10; color: #facc15; }
+  .risk-tag.risk-low { background: #0a2a1a; color: #4ade80; }
 </style>

@@ -1,26 +1,35 @@
-<app-page-header title="My applications" subtitle="Track status updates from companies." />
+<app-page-header title="My applications" subtitle="Track where each application stands in the hiring pipeline.">
+  <button class="btn-secondary btn-sm" type="button" (click)="reload()">Refresh</button>
+</app-page-header>
 
-@if (!applications.length) {
+@if (loading) {
+  <p class="loading">Loading applications…</p>
+} @else if (!applications.length) {
   <app-empty-state title="No applications yet" message="Browse approved roles and apply directly through the portal." />
 } @else {
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Role</th>
-        <th>Company</th>
-        <th>Status</th>
-        <th>Applied</th>
-      </tr>
-    </thead>
-    <tbody>
-      @for (a of applications; track a.id) {
-        <tr>
-          <td>{{ a.postingTitle }}</td>
-          <td>{{ a.companyName }}</td>
-          <td><app-status-chip [status]="a.status" /></td>
-          <td>{{ a.createdAt | date:'mediumDate' }}</td>
-        </tr>
-      }
-    </tbody>
-  </table>
+  <div class="kanban-board">
+    @for (col of columns; track col.status) {
+      <section class="kanban-column" [attr.data-status]="col.status">
+        <header class="column-header">
+          <h3>{{ col.title }}</h3>
+          <p>{{ col.subtitle }}</p>
+          <span class="count">{{ forColumn(col.status).length }}</span>
+        </header>
+
+        <div class="column-body">
+          @if (!forColumn(col.status).length) {
+            <p class="empty-col">Nothing here yet</p>
+          } @else {
+            @for (a of forColumn(col.status); track a.id) {
+              <article class="kanban-card">
+                <h4>{{ a.postingTitle }}</h4>
+                <p class="company">{{ a.companyName }}</p>
+                <time>{{ a.createdAt | date:'mediumDate' }}</time>
+              </article>
+            }
+          }
+        </div>
+      </section>
+    }
+  </div>
 }

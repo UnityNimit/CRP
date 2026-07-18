@@ -1,0 +1,114 @@
+.loading {
+  color: var(--color-muted);
+}
+
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.kanban-column {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s ease;
+}
+
+.column-header {
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+
+  h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+  }
+
+  p {
+    margin: 0.25rem 0 0;
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+
+  .count {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-muted);
+  }
+}
+
+.column-body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  flex: 1;
+}
+
+.empty-col {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 1.5rem 0.5rem;
+}
+
+.kanban-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.85rem;
+  animation: cardIn 0.25s ease;
+
+  h4 {
+    margin: 0 0 0.35rem;
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .company {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    color: var(--color-accent);
+    font-weight: 600;
+  }
+
+  time {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+  }
+}
+
+.kanban-column[data-status='SELECTED'] .kanban-card {
+  border-color: #1a5a2a;
+  background: #f4fbf6;
+}
+
+.kanban-column[data-status='REJECTED'] .kanban-card {
+  opacity: 0.85;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1100px) {
+  .kanban-board {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .kanban-board {
+    grid-template-columns: 1fr;
+  }
+}

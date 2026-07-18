@@ -1,16 +1,20 @@
 :root {
-  --color-bg: #f1f5f9;        /* Slightly darker slate so white cards pop perfectly */
-  --color-panel: #ffffff;     /* Pure White cards */
+  --color-bg: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-panel: #ffffff;
   --color-border: #e2e8f0;
-  --color-ink: #0f172a;       
-  --color-muted: #64748b;     
-  --color-accent: #2563eb;    
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-accent: #2563eb;
   --color-accent-hover: #1d4ed8;
-  
-  --color-success: #16a34a;   /* Solid Enterprise Green */
-  --color-danger: #dc2626;    /* Solid Enterprise Red */
+
+  --color-success: #16a34a;
+  --color-success-bg: #dcfce7;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fee2e2;
   --color-warning: #d97706;
-  
+  --color-warning-bg: #fef3c7;
+
   --radius: 8px;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);

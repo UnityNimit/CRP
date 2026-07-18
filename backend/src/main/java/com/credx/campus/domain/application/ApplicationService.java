@@ -4,6 +4,8 @@ import com.credx.campus.common.ApiException;
 import com.credx.campus.domain.application.Application.ApplicationStatus;
 import com.credx.campus.domain.application.ApplicationController.ApplyRequest;
 import com.credx.campus.domain.application.ApplicationController.ApplicationResponse;
+import com.credx.campus.domain.application.ApplicationController.BulkStatusResponse;
+import com.credx.campus.domain.application.ApplicationController.BulkStatusResponse.BulkFailure;
 import com.credx.campus.domain.company.CompanyProfile;
 import com.credx.campus.domain.company.CompanyProfileRepository;
 import com.credx.campus.domain.notification.NotificationService;
@@ -19,7 +21,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ApplicationService {
@@ -87,13 +92,55 @@ public class ApplicationService {
         Application app = applicationRepository.findById(applicationId).orElseThrow(() -> new ApiException(404, "Application not found"));
         if (!app.getPosting().getCompany().getId().equals(company.getId())) throw new ApiException(403, "Forbidden");
 
+        return applyStatusChange(app, status);
+    }
+
+    @Transactional
+    public BulkStatusResponse bulkUpdateStatus(List<Long> applicationIds, ApplicationStatus status) {
+        CompanyProfile company = companyProfileRepository.findByUserId(authHelper.currentUser().getId()).orElseThrow();
+        int updated = 0;
+        List<BulkFailure> failed = new ArrayList<>();
+
+        for (Long applicationId : applicationIds) {
+            try {
+                Application app = applicationRepository.findById(applicationId)
+                    .orElseThrow(() -> new ApiException(404, "Application not found"));
+                if (!app.getPosting().getCompany().getId().equals(company.getId())) {
+                    throw new ApiException(403, "Forbidden");
+                }
+                applyStatusChange(app, status);
+                updated++;
+            } catch (ApiException e) {
+                failed.add(new BulkFailure(applicationId, e.getMessage()));
+            }
+        }
+
+        return new BulkStatusResponse(updated, failed);
+    }
+
+    private ApplicationResponse applyStatusChange(Application app, ApplicationStatus status) {
         app.setStatus(status);
         Application saved = applicationRepository.save(app);
-        notificationService.notifyUser(app.getStudent().getUser(), "Your application for \"" + app.getPosting().getTitle() + "\" is now " + status.name() + ".");
+        notificationService.notifyUser(
+            app.getStudent().getUser(),
+            "Your application for \"" + app.getPosting().getTitle() + "\" is now " + status.name() + "."
+        );
         return toResponse(saved);
     }
 
     private ApplicationResponse toResponse(Application app) {
-        return new ApplicationResponse(app.getId(), app.getPosting().getId(), app.getPosting().getTitle(), app.getPosting().getCompany().getName(), app.getStudent().getUser().getDisplayName(), app.getStudent().getBranch(), app.getResumeLink(), app.getStatus(), app.getCreatedAt());
+        return new ApplicationResponse(
+            app.getId(),
+            app.getPosting().getId(),
+            app.getPosting().getTitle(),
+            app.getPosting().getCompany().getName(),
+            app.getStudent().getUser().getDisplayName(),
+            app.getStudent().getUser().getEmail(),
+            app.getStudent().getCgpa(),
+            app.getStudent().getBranch(),
+            app.getResumeLink(),
+            app.getStatus(),
+            app.getCreatedAt()
+        );
     }
 }

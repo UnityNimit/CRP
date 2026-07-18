@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   AnalyticsSummary,
+  CompanyTrustScore,
   CompanyAnalyticsSummary,
   Application,
   ApplicationStatus,
+  BulkStatusResponse,
   EligibilityTip,
   Notification,
   PageResponse,
@@ -13,7 +15,10 @@ import {
   StudentUploadResult
 } from '../models';
 
-const API_URL = 'https://crp-b2xa.onrender.com/api/v1';
+const API_URL =
+  typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? '/api/v1'
+    : 'https://crp-b2xa.onrender.com/api/v1';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -25,13 +30,21 @@ export class ApiService {
     return this.http.post<Posting>(`${API_URL}/postings`, body);
   }
 
+  updatePosting(id: number, body: object) {
+    return this.http.put<Posting>(`${API_URL}/postings/${id}`, body);
+  }
+
+  submitPosting(id: number) {
+    return this.http.post<Posting>(`${API_URL}/postings/${id}/submit`, {});
+  }
+
   companyPostings(page = 0, size = 20) {
     return this.http.get<PageResponse<Posting>>(`${API_URL}/postings/company`, {
       params: new HttpParams().set('page', page).set('size', size)
     });
   }
 
-  postingApplications(postingId: number, page = 0, size = 100) {
+  postingApplications(postingId: number, page = 0, size = 500) {
     return this.http.get<PageResponse<Application>>(`${API_URL}/company/postings/${postingId}/applications`, {
       params: new HttpParams().set('page', page).set('size', size)
     });
@@ -39,6 +52,13 @@ export class ApiService {
 
   updateApplicationStatus(id: number, status: ApplicationStatus) {
     return this.http.patch<Application>(`${API_URL}/company/applications/${id}/status`, { status });
+  }
+
+  bulkUpdateApplicationStatus(applicationIds: number[], status: ApplicationStatus) {
+    return this.http.post<BulkStatusResponse>(`${API_URL}/company/applications/bulk-status`, {
+      applicationIds,
+      status
+    });
   }
 
   closePosting(id: number) {
@@ -70,7 +90,9 @@ export class ApiService {
   }
 
   myApplications() {
-    return this.http.get<PageResponse<Application>>(`${API_URL}/student/applications`);
+    return this.http.get<PageResponse<Application>>(`${API_URL}/student/applications`, {
+      params: new HttpParams().set('page', 0).set('size', 100)
+    });
   }
 
   // ================= ADMIN ACTIONS =================
@@ -82,19 +104,27 @@ export class ApiService {
   }
 
   approvePosting(id: number) {
-    return this.http.patch<Posting>(`${API_URL}/postings/${id}/status`, null, {
-      params: new HttpParams().set('status', 'APPROVED')
-    });
+    return this.http.post<Posting>(`${API_URL}/postings/${id}/approve`, {});
   }
 
   rejectPosting(id: number, reason: string) {
-    return this.http.patch<Posting>(`${API_URL}/postings/${id}/status`, null, {
-      params: new HttpParams().set('status', 'REJECTED').set('remarks', reason)
-    });
+    return this.http.post<Posting>(`${API_URL}/postings/${id}/reject`, { reason });
+  }
+
+  requestRevision(id: number, comment: string) {
+    return this.http.post<Posting>(`${API_URL}/postings/${id}/request-revision`, { comment });
+  }
+
+  getPosting(id: number) {
+    return this.http.get<Posting>(`${API_URL}/postings/${id}`);
   }
 
   adminPosting(id: number) {
     return this.http.get<Posting>(`${API_URL}/postings/${id}`);
+  }
+
+  getCompanyTrustScore(companyId: number) {
+    return this.http.get<CompanyTrustScore>(`${API_URL}/admin/companies/${companyId}/trust-score`);
   }
 
   analytics() {

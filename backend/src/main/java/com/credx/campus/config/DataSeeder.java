@@ -21,28 +21,25 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // Only seed if no admins exist in the database yet
-        if (userRepository.countByRole(Role.ADMIN) == 0) {
-            
-            // Format: email:password:displayName
-            List<String> admins = List.of(
-                "admin-nimit@crp.com:X9K2mP7vR4:Nimit",
-                "admin-sejal@crp.com:B5jW3qL8zT:Sejal",
-                "admin-yash@crp.com:M2xF9cT4wN:Yash",
-                "admin-shrey@crp.com:P7vR4xK9mB:Shrey",
-                "admin-kartik@crp.com:L8zT5jW3qM:Kartik"
-            );
+        List<String> teamAdmins = List.of(
+            "admin-nimit@crp.com:X9K2mP7vR4:Nimit",
+            "admin-sejal@crp.com:B5jW3qL8zT:Sejal",
+            "admin-yash@crp.com:M2xF9cT4wN:Yash",
+            "admin-shrey@crp.com:P7vR4xK9mB:Shrey",
+            "admin-kartik@crp.com:L8zT5jW3qM:Kartik"
+        );
 
-            for (String adminData : admins) {
-                String[] parts = adminData.split(":");
+        for (String adminData : teamAdmins) {
+            String[] parts = adminData.split(":");
+            String email = parts[0];
+            if (userRepository.findByEmail(email).isEmpty()) {
                 User admin = new User();
-                admin.setEmail(parts[0]);
-                admin.setPasswordHash(passwordEncoder.encode(parts[1])); // Securely hash the 10-digit password
+                admin.setEmail(email);
+                admin.setPasswordHash(passwordEncoder.encode(parts[1]));
                 admin.setRole(Role.ADMIN);
                 admin.setDisplayName(parts[2]);
                 userRepository.save(admin);
             }
-            System.out.println("✅ 5 Super Admins Seeded Successfully.");
         }
     }
 }

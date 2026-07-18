@@ -17,6 +17,8 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
     // NEW: For Company Analytics Dashboard
     long countByCompanyId(Long companyId);
 
+    long countByCompanyIdAndStatus(Long companyId, PostingStatus status);
+
     Page<JobPosting> findByStatus(PostingStatus status, Pageable pageable);
 
     @Query("SELECT p FROM JobPosting p WHERE p.status = 'APPROVED' AND p.deadline >= :today")
@@ -29,7 +31,11 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE JobPosting p SET p.status = :closedStatus WHERE p.status = :approvedStatus AND p.deadline < :today")
-    int closeExpiredPostings(@Param("today") LocalDate today, 
-                             @Param("closedStatus") PostingStatus closedStatus, 
+    int closeExpiredPostings(@Param("today") LocalDate today,
+                             @Param("closedStatus") PostingStatus closedStatus,
                              @Param("approvedStatus") PostingStatus approvedStatus);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "UPDATE job_postings SET status = 'PENDING_REVIEW' WHERE status = 'PENDING'", nativeQuery = true)
+    int migratePendingToPendingReview();
 }

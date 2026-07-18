@@ -27,6 +27,7 @@ export const routes: Routes = [
     children: [
       { path: '', component: CompanyHomeComponent },
       { path: 'new', component: CompanyCreateComponent },
+      { path: 'postings/:id/edit', component: CompanyCreateComponent },
       { path: 'postings/:id', component: CompanyDetailComponent }
     ]
   },

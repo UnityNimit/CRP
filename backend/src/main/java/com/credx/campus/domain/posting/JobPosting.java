@@ -15,7 +15,12 @@ import java.time.LocalDate;
 public class JobPosting {
 
     public enum PostingStatus {
-        PENDING, APPROVED, REJECTED, CLOSED
+        DRAFT,
+        PENDING_REVIEW,
+        NEEDS_REVISION,
+        APPROVED,
+        REJECTED,
+        CLOSED
     }
 
     @Id
@@ -45,11 +50,27 @@ public class JobPosting {
     private LocalDate deadline;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PostingStatus status = PostingStatus.PENDING;
+    @Column(nullable = false, length = 32)
+    private PostingStatus status = PostingStatus.DRAFT;
 
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;
+
+    @Column(name = "revision_comment", columnDefinition = "TEXT")
+    private String revisionComment;
+
+    @Column(name = "snapshot_before_revision", columnDefinition = "TEXT")
+    private String snapshotBeforeRevision;
+
+    @Column(name = "resubmitted_at")
+    private Instant resubmittedAt;
+
+    @Column(name = "revision_requested_at")
+    private Instant revisionRequestedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "revision_requested_by")
+    private User revisionRequestedBy;
 
     @Column(name = "approved_at")
     private Instant approvedAt;
@@ -61,7 +82,6 @@ public class JobPosting {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public CompanyProfile getCompany() { return company; }
@@ -82,6 +102,16 @@ public class JobPosting {
     public void setStatus(PostingStatus status) { this.status = status; }
     public String getRejectionReason() { return rejectionReason; }
     public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
+    public String getRevisionComment() { return revisionComment; }
+    public void setRevisionComment(String revisionComment) { this.revisionComment = revisionComment; }
+    public String getSnapshotBeforeRevision() { return snapshotBeforeRevision; }
+    public void setSnapshotBeforeRevision(String snapshotBeforeRevision) { this.snapshotBeforeRevision = snapshotBeforeRevision; }
+    public Instant getResubmittedAt() { return resubmittedAt; }
+    public void setResubmittedAt(Instant resubmittedAt) { this.resubmittedAt = resubmittedAt; }
+    public Instant getRevisionRequestedAt() { return revisionRequestedAt; }
+    public void setRevisionRequestedAt(Instant revisionRequestedAt) { this.revisionRequestedAt = revisionRequestedAt; }
+    public User getRevisionRequestedBy() { return revisionRequestedBy; }
+    public void setRevisionRequestedBy(User revisionRequestedBy) { this.revisionRequestedBy = revisionRequestedBy; }
     public Instant getApprovedAt() { return approvedAt; }
     public void setApprovedAt(Instant approvedAt) { this.approvedAt = approvedAt; }
     public User getApprovedBy() { return approvedBy; }
