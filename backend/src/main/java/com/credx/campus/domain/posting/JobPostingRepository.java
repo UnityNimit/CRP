@@ -13,6 +13,9 @@ import java.util.Optional;
 public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
 
     Page<JobPosting> findByCompanyId(Long companyId, Pageable pageable);
+    
+    // NEW: For Company Analytics Dashboard
+    long countByCompanyId(Long companyId);
 
     Page<JobPosting> findByStatus(PostingStatus status, Pageable pageable);
 
@@ -24,7 +27,6 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
 
     long countByStatus(PostingStatus status);
 
-    // FIX: Safely binds enums directly through arguments to bypass Hibernate 6 nested-class semantic failures
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE JobPosting p SET p.status = :closedStatus WHERE p.status = :approvedStatus AND p.deadline < :today")
     int closeExpiredPostings(@Param("today") LocalDate today, 

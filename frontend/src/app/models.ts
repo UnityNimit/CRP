@@ -13,7 +13,6 @@ export interface MeResponse {
   profileName: string | null;
 }
 
-// FIX: Aligned perfectly with Spring Boot's PageResponse.java
 export interface PageResponse<T> {
   content: T[];
   pageNumber: number; 
@@ -49,7 +48,7 @@ export interface Application {
   companyName: string;
   studentName: string;
   studentBranch: string;
-  coverNote: string;
+  resumeLink: string; // REPLACED COVER NOTE
   status: ApplicationStatus;
   createdAt: string;
 }
@@ -66,18 +65,20 @@ export interface AnalyticsSummary {
   postingsByStatus: Record<string, number>;
 }
 
-export interface Notification {
-  id: number;
-  message: string;
-  read: boolean;
-  createdAt: string;
+export interface CompanyAnalyticsSummary {
+  totalJobs: number;
+  totalApplications: number;
+  pendingReview: number;
+  shortlisted: number;
+  selected: number;
+  rejected: number;
 }
 
 export interface EligibilityTip {
-  fitScore: number;
-  summary: string;
-  reasons: string[];
+  eligible: boolean; // STRICT BOOLEAN MATH
+  checks: string[];
 }
+
 export interface PendingCompany {
   id: number;
   name: string;
@@ -90,4 +91,11 @@ export interface StudentUploadResult {
   email: string;
   status: string;
   generatedPassword: string;
+}
+
+export interface Notification {
+  id: number;
+  message: string;
+  read: boolean;
+  createdAt: string;
 }

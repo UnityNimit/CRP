@@ -12,12 +12,18 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     boolean existsByPostingIdAndStudentId(Long postingId, Long studentId);
 
-    Page<Application> findByStudentId(Long studentId, Pageable pageable);
+    // NEW: The Placed = Blocked rule checker
+    boolean existsByStudentIdAndStatus(Long studentId, ApplicationStatus status);
 
+    Page<Application> findByStudentId(Long studentId, Pageable pageable);
     Page<Application> findByPostingId(Long postingId, Pageable pageable);
 
     @Query("SELECT COUNT(a) FROM Application a WHERE a.posting.company.id = :companyId")
     long countByCompanyId(@Param("companyId") Long companyId);
+
+    // NEW: For Company Analytics Funnel
+    @Query("SELECT COUNT(a) FROM Application a WHERE a.posting.company.id = :companyId AND a.status = :status")
+    long countByCompanyIdAndStatus(@Param("companyId") Long companyId, @Param("status") ApplicationStatus status);
 
     @Query("SELECT COUNT(DISTINCT a.student.id) FROM Application a WHERE a.status = 'SELECTED'")
     long countDistinctSelectedStudents();

@@ -9,6 +9,7 @@ import com.credx.campus.domain.company.CompanyProfileRepository;
 import com.credx.campus.domain.notification.NotificationService;
 import com.credx.campus.domain.posting.JobPosting;
 import com.credx.campus.domain.posting.JobPostingRepository;
+import com.credx.campus.domain.posting.PostingService;
 import com.credx.campus.domain.student.StudentProfile;
 import com.credx.campus.domain.student.StudentProfileRepository;
 import com.credx.campus.security.AuthHelper;
@@ -16,7 +17,6 @@ import com.credx.campus.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -30,102 +30,70 @@ public class ApplicationService {
     private final CompanyProfileRepository companyProfileRepository;
     private final NotificationService notificationService;
     private final AuthHelper authHelper;
+    private final PostingService postingService;
 
-    public ApplicationService(ApplicationRepository applicationRepository,
-                              JobPostingRepository postingRepository,
-                              StudentProfileRepository studentProfileRepository,
-                              CompanyProfileRepository companyProfileRepository,
-                              NotificationService notificationService,
-                              AuthHelper authHelper) {
+    public ApplicationService(ApplicationRepository applicationRepository, JobPostingRepository postingRepository, StudentProfileRepository studentProfileRepository, CompanyProfileRepository companyProfileRepository, NotificationService notificationService, AuthHelper authHelper, PostingService postingService) {
         this.applicationRepository = applicationRepository;
         this.postingRepository = postingRepository;
         this.studentProfileRepository = studentProfileRepository;
         this.companyProfileRepository = companyProfileRepository;
         this.notificationService = notificationService;
         this.authHelper = authHelper;
+        this.postingService = postingService;
     }
 
     @Transactional
     public ApplicationResponse apply(ApplyRequest request) {
-        User studentUser = authHelper.currentUser();
-        StudentProfile student = studentProfileRepository.findByUserId(studentUser.getId())
-            .orElseThrow(() -> new ApiException(404, "Student profile not found"));
+        // ENFORCE STRICT MATH ELIGIBILITY (Will throw 404/400 if failed)
+        var eligibility = postingService.checkEligibility(request.postingId());
+        if (!eligibility.eligible()) {
+            throw new ApiException(400, "You do not meet the strict mathematical eligibility criteria for this role.");
+        }
 
+        User studentUser = authHelper.currentUser();
+        StudentProfile student = studentProfileRepository.findByUserId(studentUser.getId()).orElseThrow();
         JobPosting posting = postingRepository.findStudentVisibleById(request.postingId(), LocalDate.now())
-            .orElseThrow(() -> new ApiException(404, "Posting not available for application"));
+            .orElseThrow(() -> new ApiException(404, "Posting not available"));
 
         if (applicationRepository.existsByPostingIdAndStudentId(posting.getId(), student.getId())) {
-            throw new ApiException(HttpStatus.CONFLICT.value(), "Already applied to this posting");
+            throw new ApiException(409, "Already applied to this posting");
         }
 
         Application app = new Application();
         app.setPosting(posting);
         app.setStudent(student);
-        app.setCoverNote(request.coverNote());
+        app.setResumeLink(request.resumeLink()); // SAVING RESUME LINK
         app.setStatus(ApplicationStatus.APPLIED);
 
         Application saved = applicationRepository.save(app);
-        notificationService.notifyUser(posting.getCompany().getUser(),
-            student.getUser().getDisplayName() + " applied to \"" + posting.getTitle() + "\".");
         return toResponse(saved);
     }
 
     public Page<ApplicationResponse> listStudentApplications(int page, int size) {
-        User studentUser = authHelper.currentUser();
-        StudentProfile student = studentProfileRepository.findByUserId(studentUser.getId())
-            .orElseThrow(() -> new ApiException(404, "Student profile not found"));
-        Page<Application> result = applicationRepository.findByStudentId(student.getId(), PageRequest.of(page, size, Sort.by("createdAt").descending()));
-        return result.map(this::toResponse);
+        StudentProfile student = studentProfileRepository.findByUserId(authHelper.currentUser().getId()).orElseThrow();
+        return applicationRepository.findByStudentId(student.getId(), PageRequest.of(page, size, Sort.by("createdAt").descending())).map(this::toResponse);
     }
 
     public Page<ApplicationResponse> listPostingApplications(Long postingId, int page, int size) {
-        User companyUser = authHelper.currentUser();
-        CompanyProfile company = companyProfileRepository.findByUserId(companyUser.getId())
-            .orElseThrow(() -> new ApiException(404, "Company profile not found"));
-        JobPosting posting = postingRepository.findById(postingId)
-            .orElseThrow(() -> new ApiException(404, "Posting not found"));
-        if (!posting.getCompany().getId().equals(company.getId())) {
-            throw new ApiException(403, "Forbidden");
-        }
-        Page<Application> result = applicationRepository.findByPostingId(postingId, PageRequest.of(page, size, Sort.by("createdAt").descending()));
-        return result.map(this::toResponse);
+        CompanyProfile company = companyProfileRepository.findByUserId(authHelper.currentUser().getId()).orElseThrow();
+        JobPosting posting = postingRepository.findById(postingId).orElseThrow();
+        if (!posting.getCompany().getId().equals(company.getId())) throw new ApiException(403, "Forbidden");
+        return applicationRepository.findByPostingId(postingId, PageRequest.of(page, size, Sort.by("createdAt").descending())).map(this::toResponse);
     }
 
     @Transactional
     public ApplicationResponse updateStatus(Long applicationId, ApplicationStatus status) {
-        User companyUser = authHelper.currentUser();
-        CompanyProfile company = companyProfileRepository.findByUserId(companyUser.getId())
-            .orElseThrow(() -> new ApiException(404, "Company profile not found"));
-
-        Application app = applicationRepository.findById(applicationId)
-            .orElseThrow(() -> new ApiException(404, "Application not found"));
-
-        if (!app.getPosting().getCompany().getId().equals(company.getId())) {
-            throw new ApiException(403, "Forbidden");
-        }
-
-        if (status != ApplicationStatus.SHORTLISTED && status != ApplicationStatus.SELECTED && status != ApplicationStatus.REJECTED) {
-            throw new ApiException(400, "Invalid status transition");
-        }
+        CompanyProfile company = companyProfileRepository.findByUserId(authHelper.currentUser().getId()).orElseThrow();
+        Application app = applicationRepository.findById(applicationId).orElseThrow(() -> new ApiException(404, "Application not found"));
+        if (!app.getPosting().getCompany().getId().equals(company.getId())) throw new ApiException(403, "Forbidden");
 
         app.setStatus(status);
         Application saved = applicationRepository.save(app);
-        notificationService.notifyUser(app.getStudent().getUser(),
-            "Your application for \"" + app.getPosting().getTitle() + "\" is now " + status.name() + ".");
+        notificationService.notifyUser(app.getStudent().getUser(), "Your application for \"" + app.getPosting().getTitle() + "\" is now " + status.name() + ".");
         return toResponse(saved);
     }
 
     private ApplicationResponse toResponse(Application app) {
-        return new ApplicationResponse(
-            app.getId(),
-            app.getPosting().getId(),
-            app.getPosting().getTitle(),
-            app.getPosting().getCompany().getName(),
-            app.getStudent().getUser().getDisplayName(),
-            app.getStudent().getBranch(),
-            app.getCoverNote(),
-            app.getStatus(),
-            app.getCreatedAt()
-        );
+        return new ApplicationResponse(app.getId(), app.getPosting().getId(), app.getPosting().getTitle(), app.getPosting().getCompany().getName(), app.getStudent().getUser().getDisplayName(), app.getStudent().getBranch(), app.getResumeLink(), app.getStatus(), app.getCreatedAt());
     }
 }

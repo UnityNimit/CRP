@@ -2,14 +2,15 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   AnalyticsSummary,
+  CompanyAnalyticsSummary,
   Application,
   ApplicationStatus,
   EligibilityTip,
   Notification,
   PageResponse,
   Posting,
-  PendingCompany,        // <-- ADDED THIS
-  StudentUploadResult    // <-- ADDED THIS
+  PendingCompany,
+  StudentUploadResult
 } from '../models';
 
 const API_URL = 'https://crp-b2xa.onrender.com/api/v1';
@@ -30,8 +31,10 @@ export class ApiService {
     });
   }
 
-  postingApplications(postingId: number) {
-    return this.http.get<PageResponse<Application>>(`${API_URL}/company/postings/${postingId}/applications`);
+  postingApplications(postingId: number, page = 0, size = 100) {
+    return this.http.get<PageResponse<Application>>(`${API_URL}/company/postings/${postingId}/applications`, {
+      params: new HttpParams().set('page', page).set('size', size)
+    });
   }
 
   updateApplicationStatus(id: number, status: ApplicationStatus) {
@@ -39,8 +42,11 @@ export class ApiService {
   }
 
   closePosting(id: number) {
-    // Note: The UI calls this, but we need to add the endpoint to the backend JobPostingController later.
     return this.http.post<Posting>(`${API_URL}/postings/${id}/close`, {});
+  }
+
+  companyAnalytics() {
+    return this.http.get<CompanyAnalyticsSummary>(`${API_URL}/company/analytics/summary`);
   }
 
   // ================= STUDENT ACTIONS =================
@@ -51,22 +57,20 @@ export class ApiService {
     });
   }
 
-  apply(postingId: number, coverNote: string) {
-    return this.http.post<Application>(`${API_URL}/student/applications`, { postingId, coverNote });
-  }
-
-  myApplications() {
-    return this.http.get<PageResponse<Application>>(`${API_URL}/student/applications`);
-  }
-
   studentPosting(id: number) {
-    // Note: We will need to add a GET /postings/{id} to JobPostingController to fetch single details.
     return this.http.get<Posting>(`${API_URL}/postings/${id}`);
   }
 
   eligibility(id: number) {
-    // Note: Placeholder for the AI Eligibility check feature.
     return this.http.get<EligibilityTip>(`${API_URL}/postings/${id}/eligibility`);
+  }
+
+  apply(postingId: number, resumeLink: string) {
+    return this.http.post<Application>(`${API_URL}/student/applications`, { postingId, resumeLink });
+  }
+
+  myApplications() {
+    return this.http.get<PageResponse<Application>>(`${API_URL}/student/applications`);
   }
 
   // ================= ADMIN ACTIONS =================
@@ -89,12 +93,12 @@ export class ApiService {
     });
   }
 
-  analytics() {
-    return this.http.get<AnalyticsSummary>(`${API_URL}/admin/analytics/summary`);
-  }
-
   adminPosting(id: number) {
     return this.http.get<Posting>(`${API_URL}/postings/${id}`);
+  }
+
+  analytics() {
+    return this.http.get<AnalyticsSummary>(`${API_URL}/admin/analytics/summary`);
   }
 
   pendingCompanies(page = 0, size = 20) {
