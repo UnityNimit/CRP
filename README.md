@@ -1,6 +1,5 @@
 # Campus Recruitment Platform (CRP)
 
-> Enterprise-grade campus placement infrastructure for Training & Placement Offices - designed for **workflow correctness**, **recruiter throughput**, and **measurable hiring integrity**.
 
 [![Java](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](#technology-stack)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-6DB33F?logo=springboot&logoColor=white)](#technology-stack)
@@ -11,11 +10,12 @@
 A full-stack recruitment platform that replaces spreadsheet-driven placement ops with a centralized system for student provisioning, company onboarding, job governance, eligibility enforcement, application tracking, and integrity analytics.
 
 ---
+## Live Demo
 
-## Video Demonstration
+Experience the application here:
 
-[![Campus Recruitment Demo](frontend/public/Screenshot%202026-07-18%20161201.png)](https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view)
-
+> **🌐 Live Application:**  
+> https://crp-su5b.onrender.com/
 
 ---
 
@@ -28,6 +28,15 @@ A full-stack recruitment platform that replaces spreadsheet-driven placement ops
 | Student | `lonavlakhandala@abc.com` | `hE3HHExIFc` |
 
 ---
+
+## Video Demonstration
+
+[![Campus Recruitment Demo](frontend/public/Screenshot%202026-07-18%20161201.png)](https://drive.google.com/file/d/11ZyYHDAjAY2X0BKbu6xyXcG8BTUfCLqU/view)
+
+
+---
+
+
 
 ## Why this exists
 
