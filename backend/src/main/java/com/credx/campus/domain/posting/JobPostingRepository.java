@@ -21,6 +21,9 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, Long> {
 
     Page<JobPosting> findByStatus(PostingStatus status, Pageable pageable);
 
+    /** Admin directory: never expose in-progress company drafts. */
+    Page<JobPosting> findByStatusNot(PostingStatus status, Pageable pageable);
+
     @Query("SELECT p FROM JobPosting p WHERE p.status = 'APPROVED' AND p.deadline >= :today")
     Page<JobPosting> findStudentVisible(@Param("today") LocalDate today, Pageable pageable);
 

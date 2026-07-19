@@ -34,13 +34,13 @@ import { EmptyStateComponent } from '../components/empty-state.component';
     } @else {
       <div class="toolbar">
         <div class="bulk-actions">
-          <button class="btn-secondary btn-sm" [disabled]="!selection.hasValue()" (click)="bulkUpdate('SHORTLISTED')">
-            Move to Shortlist ({{ selection.selected.length }})
+          <button class="btn-secondary btn-sm" [disabled]="!actionableSelectionCount" (click)="bulkUpdate('SHORTLISTED')">
+            Move to Shortlist ({{ actionableSelectionCount }})
           </button>
-          <button class="btn-primary btn-sm" [disabled]="!selection.hasValue()" (click)="bulkUpdate('SELECTED')">
+          <button class="btn-primary btn-sm" [disabled]="!actionableSelectionCount" (click)="bulkUpdate('SELECTED')">
             Select (Offer)
           </button>
-          <button class="btn-danger btn-sm" [disabled]="!selection.hasValue()" (click)="bulkUpdate('REJECTED')">
+          <button class="btn-danger btn-sm" [disabled]="!actionableSelectionCount" (click)="bulkUpdate('REJECTED')">
             Reject
           </button>
         </div>
@@ -67,6 +67,7 @@ import { EmptyStateComponent } from '../components/empty-state.component';
                 (click)="$event.stopPropagation()"
                 (change)="$event ? selection.toggle(row) : null"
                 [checked]="selection.isSelected(row)"
+                [disabled]="!isBulkSelectable(row)"
                 color="primary">
               </mat-checkbox>
             </td>
@@ -174,21 +175,41 @@ export class CompanyDetailComponent implements OnInit {
     });
   }
 
+  /** Offered/rejected stay visible, but are locked out of bulk actions. */
+  isBulkSelectable(app: Application): boolean {
+    return app.status !== 'SELECTED' && app.status !== 'REJECTED';
+  }
+
+  get actionableSelection(): Application[] {
+    return this.selection.selected.filter(a => this.isBulkSelectable(a));
+  }
+
+  get actionableSelectionCount(): number {
+    return this.actionableSelection.length;
+  }
+
   isAllSelected(): boolean {
-    return this.selection.selected.length === this.applications.length;
+    const selectable = this.applications.filter(a => this.isBulkSelectable(a));
+    return selectable.length > 0 && this.actionableSelectionCount === selectable.length;
   }
 
   toggleAllRows() {
+    const selectable = this.applications.filter(a => this.isBulkSelectable(a));
     if (this.isAllSelected()) {
       this.selection.clear();
     } else {
-      this.selection.select(...this.applications);
+      this.selection.clear();
+      this.selection.select(...selectable);
     }
   }
 
   bulkUpdate(status: ApplicationStatus) {
-    const ids = this.selection.selected.map(a => a.id);
-    if (!ids.length) return;
+    const ids = this.actionableSelection.map(a => a.id);
+    if (!ids.length) {
+      this.message = 'No actionable applicants selected (offered/rejected are locked).';
+      setTimeout(() => (this.message = ''), 3000);
+      return;
+    }
     if (!confirm(`Update ${ids.length} applicant(s) to ${status}?`)) return;
 
     this.api.bulkUpdateApplicationStatus(ids, status).subscribe({
@@ -202,6 +223,11 @@ export class CompanyDetailComponent implements OnInit {
   }
 
   updateStatus(app: Application, status: ApplicationStatus) {
+    if (app.status === 'SELECTED' || app.status === 'REJECTED') {
+      this.message = 'This applicant is locked and cannot be changed.';
+      setTimeout(() => (this.message = ''), 3000);
+      return;
+    }
     if (!confirm(`Mark ${app.studentName} as ${status}?`)) return;
     this.api.updateApplicationStatus(app.id, status).subscribe({
       next: () => {

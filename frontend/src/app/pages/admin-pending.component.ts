@@ -12,7 +12,7 @@ import { EmptyStateComponent } from '../components/empty-state.component';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, StatusChipComponent, EmptyStateComponent],
   template: `
-    <app-page-header title="Job Directory" subtitle="Review and manage all company job postings across the platform." />
+    <app-page-header title="Job Directory" subtitle="Review submitted postings, trust signals, and approval decisions." />
 
     @if (message) { <div class="success-banner">{{ message }}</div> }
 
@@ -20,15 +20,27 @@ import { EmptyStateComponent } from '../components/empty-state.component';
       <div class="spinner-container"><div class="spinner"></div></div>
     } @else {
       <div class="split-layout">
-        
         <div class="list-pane">
           @if (!postings.length) {
-            <app-empty-state title="No Postings" message="Companies have not created any job postings yet." />
+            <app-empty-state title="No Postings" message="No submitted postings yet. Company drafts stay private until submit." />
           } @else {
             <div class="queue-list">
               @for (p of postings; track p.id) {
                 <button class="queue-item" [class.active]="selected?.id === p.id" (click)="select(p)">
-                  <div class="qi-header"><strong>{{ p.title }}</strong></div>
+                  <div class="qi-header">
+                    <strong>{{ p.title }}</strong>
+                    @if (isResubmitted(p)) {
+                      <span class="badge-resubmitted">Resubmitted</span>
+                    }
+                    @if (showRiskPill(p)) {
+                      <span
+                        class="risk-pill"
+                        [class.risk-high]="p.companyTrust?.riskLevel === 'HIGH'"
+                        [class.risk-medium]="p.companyTrust?.riskLevel === 'MEDIUM'">
+                        {{ riskLabel(p) }} risk
+                      </span>
+                    }
+                  </div>
                   <span class="company-name">{{ p.companyName }}</span>
                   <app-status-chip [status]="p.status" />
                 </button>
@@ -42,21 +54,82 @@ import { EmptyStateComponent } from '../components/empty-state.component';
             <div class="detail-card">
               <h3>{{ selected.title }}</h3>
               <p class="company-highlight">{{ selected.companyName }}</p>
+              @if (isResubmitted(selected)) {
+                <p class="resubmitted-note">This posting was resubmitted after revision.</p>
+              }
               <div class="desc-box">{{ selected.description }}</div>
-              
+
               <ul class="specs">
                 <li><strong>Min CGPA:</strong> {{ selected.minCgpa }}</li>
                 <li><strong>Branches:</strong> {{ selected.allowedBranches.join(', ') || 'All' }}</li>
                 <li><strong>Deadline:</strong> {{ selected.deadline }}</li>
               </ul>
-              
-              @if (selected.status === 'PENDING') {
+
+              @if (hasFieldChanges(selected)) {
+                <div class="diff-panel">
+                  <h4>What changed</h4>
+                  <table class="diff-table">
+                    <thead>
+                      <tr><th>Field</th><th>Previous</th><th>Current</th></tr>
+                    </thead>
+                    <tbody>
+                      @for (change of selected.fieldChanges; track change.field) {
+                        <tr>
+                          <td>{{ change.field }}</td>
+                          <td class="prev">{{ change.previous || '—' }}</td>
+                          <td class="curr">{{ change.current || '—' }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              }
+
+              @if (selected.companyTrust) {
+                <div class="trust-panel" [class.trust-high]="selected.companyTrust.riskLevel === 'HIGH'">
+                  <div class="trust-header">
+                    <h4>Company Trust</h4>
+                    <span
+                      class="risk-badge"
+                      [class.risk-high]="selected.companyTrust.riskLevel === 'HIGH'"
+                      [class.risk-medium]="selected.companyTrust.riskLevel === 'MEDIUM'"
+                      [class.risk-low]="selected.companyTrust.riskLevel === 'LOW'"
+                      [class.risk-unknown]="selected.companyTrust.riskLevel === 'UNKNOWN'">
+                      {{ selected.companyTrust.riskLevel }}
+                    </span>
+                  </div>
+                  <p class="trust-note">Based on closed roles only — open hiring cycles are excluded.</p>
+                  @if (selected.companyTrust.sampleOk) {
+                    <div class="trust-metrics">
+                      <div><span class="metric-label">Trust score</span><strong>{{ selected.companyTrust.trustScore }}</strong></div>
+                      <div><span class="metric-label">Ghost rate</span><strong>{{ selected.companyTrust.ghostRate }}%</strong></div>
+                      <div><span class="metric-label">Black-hole rate</span><strong>{{ selected.companyTrust.blackHoleRate }}%</strong></div>
+                    </div>
+                    <ul class="trust-stats">
+                      <li>{{ selected.companyTrust.closedApps }} closed apps · {{ selected.companyTrust.closedOffers }} offers</li>
+                      <li>{{ selected.companyTrust.untouched }} untouched · {{ selected.companyTrust.reviewed }} reviewed</li>
+                    </ul>
+                  } @else {
+                    <p class="trust-unknown">New recruiter — limited closed-role history ({{ selected.companyTrust.closedApps }} closed apps).</p>
+                  }
+                  <p class="trust-summary">{{ selected.companyTrust.summary }}</p>
+                </div>
+              }
+
+              @if (canReview(selected)) {
                 <div class="actions">
                   <button class="btn-primary" (click)="approve(selected)">Approve Posting</button>
                 </div>
+
+                <form [formGroup]="revisionForm" (ngSubmit)="requestRevision()" class="revision-form">
+                  <label>Revision comment (required)</label>
+                  <textarea formControlName="comment" rows="2" placeholder="Describe what the company should fix…"></textarea>
+                  <button class="btn-warning" type="submit" [disabled]="revisionForm.invalid" style="margin-top: 0.75rem;">Needs revision</button>
+                </form>
+
                 <form [formGroup]="rejectForm" (ngSubmit)="reject()" class="reject-form">
                   <label>Rejection reason</label>
-                  <textarea formControlName="reason" rows="2" placeholder="Explain why this posting is rejected..."></textarea>
+                  <textarea formControlName="reason" rows="2" placeholder="Explain why this posting is rejected…"></textarea>
                   <button class="btn-danger" type="submit" [disabled]="rejectForm.invalid" style="margin-top: 0.75rem;">Reject Posting</button>
                 </form>
               } @else {
@@ -65,6 +138,9 @@ import { EmptyStateComponent } from '../components/empty-state.component';
                   @if (selected.rejectionReason) {
                     <p class="rejection-text">Reason: {{ selected.rejectionReason }}</p>
                   }
+                  @if (selected.revisionComment && selected.status === 'NEEDS_REVISION') {
+                    <p class="revision-text">Revision note: {{ selected.revisionComment }}</p>
+                  }
                 </div>
               }
             </div>
@@ -72,56 +148,94 @@ import { EmptyStateComponent } from '../components/empty-state.component';
             <div class="placeholder-pane"><p>Select a posting to review details.</p></div>
           }
         </div>
-
       </div>
     }
   `,
   styles: [`
     .success-banner { background: var(--color-success-bg); border: 1px solid #86efac; color: var(--color-success); padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; font-weight: 500; font-size: 0.9rem; }
-    
+
     .split-layout { display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; align-items: start; }
-    
+
     .list-pane { background: var(--color-panel); border: 1px solid var(--color-border); border-radius: var(--radius); box-shadow: var(--shadow-sm); height: calc(100vh - 180px); overflow-y: auto; }
     .queue-list { display: flex; flex-direction: column; }
     .queue-item { display: block; width: 100%; text-align: left; background: transparent; border: none; border-bottom: 1px solid var(--color-border); padding: 1.25rem; cursor: pointer; transition: all 0.2s; }
     .queue-item:last-child { border-bottom: none; }
     .queue-item:hover { background: #f8fafc; }
     .queue-item.active { background: #eff6ff; border-left: 4px solid var(--color-accent); }
-    .qi-header strong { font-size: 0.95rem; color: var(--color-ink); display: block; margin-bottom: 0.2rem; }
+    .qi-header { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.35rem; }
+    .qi-header strong { font-size: 0.95rem; color: var(--color-ink); }
     .company-name { display: block; color: var(--color-muted); font-size: 0.8rem; margin-bottom: 0.6rem; font-weight: 500; }
-    
+
+    .badge-resubmitted {
+      display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      padding: 0.15rem 0.45rem; border-radius: 999px; background: #dbeafe; color: #1d4ed8;
+    }
+    .risk-pill { display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; padding: 0.15rem 0.45rem; border-radius: 999px; }
+    .risk-pill.risk-high, .risk-badge.risk-high { background: var(--color-danger-bg); color: var(--color-danger); }
+    .risk-pill.risk-medium, .risk-badge.risk-medium { background: var(--color-warning-bg); color: var(--color-warning); }
+    .risk-badge.risk-low { background: var(--color-success-bg); color: var(--color-success); }
+    .risk-badge.risk-unknown { background: #f1f5f9; color: var(--color-muted); }
+
     .detail-pane { min-height: 400px; }
     .detail-card { background: var(--color-panel); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); }
     .detail-card h3 { margin: 0 0 0.25rem 0; font-size: 1.4rem; color: var(--color-ink); font-weight: 700; }
-    .company-highlight { color: var(--color-muted); font-weight: 500; margin: 0 0 1.5rem 0; font-size: 0.9rem; }
-    
+    .company-highlight { color: var(--color-accent); font-weight: 600; margin: 0 0 0.75rem 0; font-size: 0.95rem; }
+    .resubmitted-note { color: var(--color-accent); font-size: 0.85rem; font-weight: 500; margin: 0 0 1rem; }
+
     .desc-box { background: #f8fafc; padding: 1.25rem; border-radius: 6px; border: 1px solid var(--color-border); color: var(--color-ink); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; }
-    
-    .specs { list-style: none; padding: 0; margin: 0 0 2rem 0; }
+
+    .specs { list-style: none; padding: 0; margin: 0 0 1.5rem 0; }
     .specs li { padding: 0.75rem 0; border-bottom: 1px solid var(--color-border); font-size: 0.9rem; }
     .specs li strong { display: inline-block; width: 120px; color: var(--color-muted); }
-    
+
+    .diff-panel { margin: 0 0 1.5rem; padding: 1rem; background: #f8fafc; border: 1px solid var(--color-border); border-radius: 6px; }
+    .diff-panel h4 { margin: 0 0 0.75rem; font-size: 0.95rem; }
+    .diff-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .diff-table th, .diff-table td { padding: 0.4rem 0.5rem; text-align: left; border-bottom: 1px solid var(--color-border); }
+    .diff-table .prev { color: var(--color-muted); text-decoration: line-through; }
+    .diff-table .curr { color: var(--color-success); font-weight: 600; }
+
+    .trust-panel { margin: 0 0 1.5rem; padding: 1rem; border: 1px solid var(--color-border); border-radius: 6px; background: #f8fafc; }
+    .trust-panel.trust-high { border-color: #fca5a5; background: #fef2f2; }
+    .trust-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+    .trust-header h4 { margin: 0; font-size: 0.95rem; }
+    .risk-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 999px; }
+    .trust-note { font-size: 0.8rem; color: var(--color-muted); margin: 0 0 0.75rem; }
+    .trust-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 0.75rem; }
+    .metric-label { display: block; font-size: 0.75rem; color: var(--color-muted); }
+    .trust-stats { margin: 0; padding-left: 1.1rem; font-size: 0.85rem; color: var(--color-muted); }
+    .trust-unknown { font-size: 0.9rem; color: var(--color-muted); margin: 0 0 0.5rem; }
+    .trust-summary { font-size: 0.85rem; margin: 0.5rem 0 0; font-style: italic; color: var(--color-muted); }
+
     .actions { padding-bottom: 1.5rem; border-bottom: 1px solid var(--color-border); margin-bottom: 1.5rem; }
-    .reject-form label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--color-ink); }
-    
+    .revision-form, .reject-form { margin-top: 1.25rem; }
+    .revision-form label, .reject-form label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--color-ink); }
+    .btn-warning { padding: 0.6rem 1.2rem; background: var(--color-warning-bg); color: var(--color-warning); border: 1px solid #fcd34d; border-radius: 6px; font-weight: 500; cursor: pointer; }
+
     .status-notice { background: #f8fafc; border: 1px dashed var(--color-border); padding: 1rem; border-radius: 6px; }
     .status-notice p { margin: 0; font-size: 0.9rem; color: var(--color-muted); }
     .rejection-text { margin-top: 0.5rem !important; color: var(--color-danger) !important; font-weight: 500; }
+    .revision-text { margin-top: 0.5rem !important; color: var(--color-warning) !important; font-weight: 500; }
 
     .placeholder-pane { display: flex; align-items: center; justify-content: center; height: 100%; min-height: 400px; background: transparent; border: 1px dashed var(--color-border); border-radius: var(--radius); color: var(--color-muted); font-size: 0.95rem; }
-    
-    @media (max-width: 900px) { .split-layout { grid-template-columns: 1fr; } .list-pane { height: 300px; } }
+
+    @media (max-width: 900px) {
+      .split-layout { grid-template-columns: 1fr; }
+      .list-pane { height: 300px; }
+      .trust-metrics { grid-template-columns: 1fr; }
+    }
   `]
 })
 export class AdminPendingComponent implements OnInit {
   private api = inject(ApiService);
   private fb = inject(FormBuilder);
-  
+
   postings: Posting[] = [];
   selected?: Posting;
   message = '';
   loading = true;
   rejectForm = this.fb.group({ reason: ['', [Validators.required, Validators.minLength(5)]] });
+  revisionForm = this.fb.group({ comment: ['', [Validators.required, Validators.minLength(5)]] });
 
   ngOnInit() { this.load(); }
 
@@ -129,22 +243,67 @@ export class AdminPendingComponent implements OnInit {
     this.loading = true;
     this.api.adminPostings().subscribe({
       next: res => {
-        this.postings = res.content;
-        if (this.selected) { this.selected = this.postings.find(p => p.id === this.selected!.id); }
+        // Defense-in-depth: never show company drafts in admin UI
+        this.postings = res.content.filter(p => p.status !== 'DRAFT');
+        if (this.selected) {
+          this.selected = this.postings.find(p => p.id === this.selected!.id);
+        }
         this.loading = false;
       },
       error: () => this.loading = false
     });
   }
 
-  select(p: Posting) { this.selected = p; this.message = ''; this.rejectForm.reset(); }
+  select(p: Posting) {
+    this.selected = p;
+    this.message = '';
+    this.rejectForm.reset();
+    this.revisionForm.reset();
+  }
+
+  canReview(p: Posting): boolean {
+    return p.status === 'PENDING_REVIEW' || p.status === 'PENDING';
+  }
 
   approve(p: Posting) {
-    this.api.approvePosting(p.id).subscribe({ next: () => { this.message = 'Posting approved successfully'; this.load(); } });
+    const trust = p.companyTrust;
+    if (trust?.riskLevel === 'HIGH') {
+      const msg = `This company has HIGH trust risk (${trust.ghostRate}% ghost rate, ${trust.blackHoleRate}% black-hole). ${trust.summary}. Approve anyway?`;
+      if (!confirm(msg)) return;
+    }
+    this.api.approvePosting(p.id).subscribe({
+      next: () => { this.message = 'Posting approved successfully'; this.load(); }
+    });
   }
 
   reject() {
     if (!this.selected || this.rejectForm.invalid) return;
-    this.api.rejectPosting(this.selected.id, this.rejectForm.value.reason!).subscribe({ next: () => { this.message = 'Posting rejected successfully'; this.load(); } });
+    this.api.rejectPosting(this.selected.id, this.rejectForm.value.reason!).subscribe({
+      next: () => { this.message = 'Posting rejected successfully'; this.load(); }
+    });
+  }
+
+  requestRevision() {
+    if (!this.selected || this.revisionForm.invalid) return;
+    this.api.requestRevision(this.selected.id, this.revisionForm.value.comment!).subscribe({
+      next: () => { this.message = 'Revision requested'; this.selected = undefined; this.load(); }
+    });
+  }
+
+  isResubmitted(p: Posting): boolean {
+    return !!p.resubmittedAt;
+  }
+
+  hasFieldChanges(p: Posting): boolean {
+    return !!p.fieldChanges?.length;
+  }
+
+  showRiskPill(p: Posting): boolean {
+    const risk = p.companyTrust?.riskLevel;
+    return risk === 'HIGH' || risk === 'MEDIUM';
+  }
+
+  riskLabel(p: Posting): string {
+    return p.companyTrust?.riskLevel ?? '';
   }
 }

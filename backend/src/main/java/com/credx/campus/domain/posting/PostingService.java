@@ -223,8 +223,11 @@ public class PostingService {
     }
 
     public Page<PostingResponse> listAllAdminPostings(int page, int size) {
-        Page<JobPosting> result = postingRepository.findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()));
-        return result.map(p -> toResponse(p, getAppCount(p.getId())));
+        // Drafts are company-private until submitted — exclude from admin directory
+        Page<JobPosting> result = postingRepository.findByStatusNot(
+            PostingStatus.DRAFT,
+            PageRequest.of(page, size, Sort.by("createdAt").descending()));
+        return result.map(p -> toAdminResponse(p, getAppCount(p.getId())));
     }
 
     @Transactional

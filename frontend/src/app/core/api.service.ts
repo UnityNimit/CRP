@@ -105,15 +105,11 @@ export class ApiService {
   }
 
   approvePosting(id: number) {
-    return this.http.patch<Posting>(`${API_URL}/postings/${id}/status`, null, {
-      params: new HttpParams().set('status', 'APPROVED')
-    });
+    return this.http.post<Posting>(`${API_URL}/postings/${id}/approve`, {});
   }
 
   rejectPosting(id: number, reason: string) {
-    return this.http.patch<Posting>(`${API_URL}/postings/${id}/status`, null, {
-      params: new HttpParams().set('status', 'REJECTED').set('remarks', reason)
-    });
+    return this.http.post<Posting>(`${API_URL}/postings/${id}/reject`, { reason });
   }
 
   requestRevision(id: number, comment: string) {

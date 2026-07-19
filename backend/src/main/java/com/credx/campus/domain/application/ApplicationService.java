@@ -119,6 +119,17 @@ public class ApplicationService {
     }
 
     private ApplicationResponse applyStatusChange(Application app, ApplicationStatus status) {
+        ApplicationStatus current = app.getStatus();
+        if (current == status) {
+            return toResponse(app);
+        }
+        // Offers and rejections are terminal — no reverse via row or bulk actions
+        if (current == ApplicationStatus.SELECTED) {
+            throw new ApiException(409, "Cannot change status of an offered applicant");
+        }
+        if (current == ApplicationStatus.REJECTED) {
+            throw new ApiException(409, "Cannot change status of a rejected applicant");
+        }
         app.setStatus(status);
         Application saved = applicationRepository.save(app);
         notificationService.notifyUser(
