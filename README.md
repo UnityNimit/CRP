@@ -33,7 +33,6 @@ Experience the application here:
 
 [![Campus Recruitment Demo](frontend/public/Screenshot%202026-07-18%20161201.png)](https://drive.google.com/file/d/1PH-jTn3xIpHkBgOKIn3QwSkJyiBOv1ri/view?usp=drive_link/view)
 
-
 ---
 
 
